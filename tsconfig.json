@@ -1,0 +1,54 @@
+// {
+//   "extends": "./.nuxt/tsconfig.json",
+//   "compilerOptions": {
+//     "baseUrl": ".",
+//     "moduleResolution": "node",
+//     "paths": {
+//       "@/*": ["*"],
+//       "@pinia/nuxt": ["/node_modules/@pinia/nuxt/types"]
+//     },
+//     "types": ["@nuxt/ui"],
+//     "typeRoots": [
+//       "./types",
+//       "./node_modules/@types"
+//     ],
+//     "resolveJsonModule": true,
+//     "skipLibCheck": true,
+//     "target": "esnext",
+//     "module": "esnext",
+//     "strict": true,
+//     "jsx": "preserve",
+//     "esModuleInterop": true,
+//     "forceConsistentCasingInFileNames": true
+//   },
+//   "exclude": [
+//     "node_modules"
+//   ]
+// }
+
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["*"]
+    },
+    "types": ["@nuxt/ui"],
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
