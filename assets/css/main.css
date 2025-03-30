@@ -22,4 +22,17 @@ scrollbar-width: none;
     display: none;
 }
 
-  
+/* Transition Animations */
+.drop-enter-active,
+.drop-leave-active {
+    transition: all 0.4s ease;
+}
+.drop-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+.drop-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+}
+

@@ -59,7 +59,7 @@
                 @click="(): void => {
                     resetFile();
                 }"
-                class="absolute top-0 right-0 bg-gray-200 p-1 cursor-pointer">
+                class="absolute -top-1 right-0 bg-white  cursor-pointer">
                 <Reset/>
             </div>
         </div>

@@ -55,9 +55,9 @@
                 <MenuList
                     :icon="ScreenSale"
                     title="Screen Sale"
-                    path=""
+                    path="/screen-pos"
                     :class-title="expand ? '' : 'hidden'"
-                    @click="() => handleClose('/screen_sale')"
+                    @click="() => handleClose('/screen-pos')"
                     @set-title="showTitle"/>
                 <MenuList
                     :icon="CustomerLists"
@@ -93,14 +93,6 @@
                             @set-title="showTitle"/>
                         <MenuList
                             icon="icon-park-outline:ad-product"
-                            title="Menu Type"
-                            path="/menu-type"
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/menu-type')"
-                            @set-title="showTitle"/>
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
                             title="Menu Category"
                             path="/menu-category"
                             class-name="pl-3"
@@ -110,26 +102,38 @@
                     </AccordionMenu>
                     <MenuList
                             icon="icon-park-outline:ad-product"
-                            title="Promotion Gift"
-                            path=""
+                            title="Accessory Gift"
+                            path="/accessory-gift"
                             :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/product_brand')"
+                            @click="() => handleClose('/accessory-gift')"
                             @set-title="showTitle"/>
+                    <SectionList
+                        :class-title="expand ? '' : 'hidden'"
+                        label="PURCHASE"/>
+                        <MenuList
+                            icon="icon-park-outline:ad-product"
+                            title="Purchase List"
+                            path="/purchase-list"
+                            class-name="pl-3"
+                            :class-title="expand ? '' : 'hidden'"
+                            @click="() => handleClose('/purchase-list')"
+                            @set-title="showTitle"
+                        />
+                        <MenuList
+                            icon="icon-park-outline:ad-product"
+                            title="Return PO"
+                            path=""
+                            class-name="pl-3"
+                            :class-title="expand ? '' : 'hidden'"
+                            @click="() => handleClose('')"
+                            @set-title="showTitle"
+                        />
                 <SectionList
                     :class-title="expand ? '' : 'hidden'"
-                    label="PURCHASE"/>
+                    label="Stock"/>
                     <MenuList
                         icon="icon-park-outline:ad-product"
-                        title="Purchase List"
-                        path=""
-                        class-name="pl-3"
-                        :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                    <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="Return PO"
+                        title="Stock Lists"
                         path=""
                         class-name="pl-3"
                         :class-title="expand ? '' : 'hidden'"

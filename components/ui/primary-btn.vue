@@ -16,6 +16,6 @@ withDefaults(
         name: 'Back',
         size: 'py-2 px-4'    
     }
-  );
+);
 </script>
   

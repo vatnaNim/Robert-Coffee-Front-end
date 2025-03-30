@@ -25,7 +25,6 @@
                         placeholder="Search..."
                         icon="i-heroicons-magnifying-glass-20-solid"
                         autocomplete="off"
-                        
                         color="amber"
                         :ui="{ icon: { 
                             trailing: { pointer: '' },

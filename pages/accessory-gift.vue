@@ -2,8 +2,8 @@
     <div>
         <template
             v-if="openModal">
-            <Membership
-                :member-id="null"
+            <AcccessoryGift
+                :giftId="null"
                 :title="ModalTitle"
                 @update:data=""
                 @toggle="toggleModal"
@@ -13,78 +13,43 @@
             <div 
                 class="bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
                 <div 
-                    class="w-full flex justify-between items-center gap-4">
+                    class="flex justify-between items-center">
                     <PrimaryBtn
-                        name="Create membership"
+                        name="Create Accessory"
                         size="px-3 py-2 text-sm"
                         @click="toggleModal('Create', true)"
                     />
-                    <div 
-                        class="flex items-center justify-end gap-2">
-                        <LazyUInput
-                            v-model="emptyValue"
-                            name="emptyValue"
-                            placeholder="Search membership name or code..."
-                            icon="i-heroicons-magnifying-glass-20-solid"
-                            autocomplete="off"
-                            color="amber"
-                            :ui="{ icon: { trailing: { pointer: '' }, color: 'text-orange-500' } }">
-                            <template #trailing>
-                                <UButton
-                                    v-show="emptyValue !== ''"
-                                    color="red"
-                                    variant="link"
-                                    icon="i-heroicons-x-mark-20-solid"
-                                    :padded="false"
-                                    @click="emptyValue = ''"
-                                />
-                            </template>
-                        </LazyUInput>
-                    </div>
-                </div>
-
-                <div 
-                    class="bg-gray-100 rounded-lg shadow-lg overflow-x-auto">
-                    <div 
-                        class="flex px-3 py-3.5 border-b gap-x-2 items-center border-orange-400">
-                       <UFormGroup 
-                            label="Filter card type:"
-                            :ui="{
-                                label:{
-                                    base: 'text-orange-500 fornt-semibold'
-                                }
-                            }"/>
-                       <SelectMenu
-                            class="w-full max-w-[350px] sm:max-w-[500px]"
-                            name=""
-                            value-attribute="value"
-                            option-attribute="value"
-                            size="sm"
-                            color="amber"
-                            placeholder="Please filter card level"
-                            :options="[
-                                { label: 'Silver point', value: 'silver point' },
-                                { label: 'Gold point', value: 'gold point' },
-                                { label: 'Black point', value: 'black point' }
-                            ]"
+                    <UInput
+                        v-model="emptyValue"
+                        name="emptyValue"
+                        placeholder="Search gift name/code..."
+                        icon="i-heroicons-magnifying-glass-20-solid"
+                        autocomplete="off"
+                        color="amber"
+                        :ui="{ icon: { 
+                            trailing: { pointer: '' },
+                            color: 'text-orange-500' } }">
+                        <template #trailing>
+                        <UButton
+                            v-show="emptyValue !== ''"
+                            color="red"
+                            variant="link"
+                            icon="i-heroicons-x-mark-20-solid"
+                            :padded="false"
+                            @click="emptyValue = ''"
                         />
-                    </div>
+                        </template>
+                    </UInput>
+                </div>
+                <div 
+                    class="bg-gray-100 rounded-lg shadow-lg">
 					<LazyUTable
-                        v-model:expand="expand"
                         :rows="rows"
                         :columns="selectedColumns"
                         :ui="{
                             divide: 'divide-orange-400',
-                            th: { base: 'text-orange-400 text-nowrap' }
+                            th: { base: 'text-orange-400 ' }
                         }">
-                        <template #expand="{ row }">
-                            <TransitionGroup
-                                tag="div"
-                                name="drop" 
-                                class="p-4">
-                                <MembershipHistory :key="row.id"/>
-                            </TransitionGroup>
-                        </template>
                         <template #image-data="{ row }">
                             <TooltipImage
                                 :scr="row.image"
@@ -95,21 +60,6 @@
                                 :containerWidth="150"
                                 :containerHeight="150"
                             />
-                        </template>
-                        <template #price-data="{ row }">
-                            <span
-                                class="text-green-500 pb-0.5">
-                                $ {{ row.price?.price_dol }}
-                            </span>
-                            <UDivider  :ui="{
-                                border: {
-                                    border: 'border-2'
-                                }
-                            }" />
-                            <span
-                                class="text-red-500 pt-0.5">
-                                {{ row.price?.price_khr }} KHR
-                            </span>
                         </template>
                         <template #action-data="{ row }">
                             <div
@@ -132,6 +82,7 @@
                                     icon="material-symbols:delete-outline-rounded"
                                     :padded="false"
                                     square
+                                    
                                 />
                             </div>
                         </template>
@@ -183,17 +134,10 @@
 
 <script setup lang="ts">
 import { 
-    Membership
+    AcccessoryGift 
 } from '@/collector/pages';
-import { 
-    TooltipImage, 
-    PrimaryBtn,
-    SelectMenu 
-} from '@/components/ui';
-import { 
-    MembershipHistory 
-} from '@/collector/expand-table';
-
+import { TooltipImage } from '@/components/ui';
+import PrimaryBtn from '@/components/ui/primary-btn.vue';
 
 definePageMeta({
     // middleware: 'auth',
@@ -202,37 +146,33 @@ definePageMeta({
 
 const columns = [
     {
-        label: 'ID',
+        label: '#Code',
         key: '',
         rowClass: '!text-orange-500'
     },
     {
         key: 'image',
-        label: 'profile'
+        label: 'Image'
     },
     {
         key: 'name',
         label: 'Name'
     }, 
     {
-        key: 'gender',
-        label: 'Gender'
+        key: 'gift_type',
+        label: 'Gift Type'
     },
     {
-        key: 'phone_number',
-        label: 'Tel'
+        key: 'price',
+        label: 'Price'
     },
     {
-        key: 'email',
-        label: 'Email'
+        key: '',
+        label: 'Exchange Points'
     },
     {
-        key: 'card_level',
-        label: 'Card Level'
-    },
-    {
-        key: 'point',
-        label: 'Point'
+        key: '',
+        label: 'Stocks'
     },
     {
         key: 'action',
@@ -265,10 +205,6 @@ const dataAll = [
     { id: 12, name: 'Ethan Clark', image: '', menu_type: 'dessert' }
 ]
 
-const expand = ref({
-    openedRows: [dataAll],
-    row: {}
-});
 
 const selectedColumns = ref([...columns])
 
