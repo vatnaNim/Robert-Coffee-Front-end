@@ -17,7 +17,7 @@
             role="input"
             :ui="{
                 icon: {
-                    color:'text-orange-500'
+                    color:'text-orange-500 dark:text-orange-500'
                 }
             }"/>
         <template #panel="{ close }">

@@ -2,19 +2,19 @@
     <li
         @click="toggleAccordion(index)"
         role="accordion"
-        class="bg-[#E4C59E] hover:bg-[#803D3B] py-2  flex items-center justify-between cursor-pointer">
+        class="bg-gray-400/70 dark:bg-gray-900 py-1.5 flex items-center justify-between cursor-pointer">
         <button
-            class="bg-transparent flex gap-x-3 items-center text-white text-nowrap"
+            class="bg-transparent flex gap-x-3 items-center text-gray-600 dark:text-white text-nowrap"
             :class="classTitle ? 'ml-6' : 'ml-9'">
             <UIcon
                 v-if="typeof(icon) === 'string'"
                 :name="icon"
-                class="text-2xl w-5 h-6"/>
+                class=" w-4 h-4"/>
             <component
                 v-else
                 :is="icon"/>
             <span
-                class="font-semibold text-white font-size-p"
+                class="font-semibold text-sm"
                 :class="classTitle">{{ title }}</span>
         </button>
         <ArrowDown
@@ -22,11 +22,11 @@
                 '-rotate-90': activeIndex !== index,
                 'hidden': classTitle
             }"
-            class="text-white"/>
+            class="text-white w-6 h-6"/>
     </li>
     <ul
         role="list"
-        class="list-none flex flex-col gap-y-2 transition-all"
+        class="list-none flex flex-col transition-all *:py-2.5"
         :class="{
             'hidden': activeIndex !== index
         }">

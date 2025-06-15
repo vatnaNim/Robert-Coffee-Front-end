@@ -11,7 +11,7 @@
         </template>
         <template v-else>
             <div 
-                class="bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
+                class=" bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8">
                 <div 
                     class="w-full flex justify-between items-center gap-4">
                     <PrimaryBtn
@@ -28,7 +28,7 @@
                             icon="i-heroicons-magnifying-glass-20-solid"
                             autocomplete="off"
                             color="amber"
-                            :ui="{ icon: { trailing: { pointer: '' }, color: 'text-orange-500' } }">
+                            :ui="{ icon: { trailing: { pointer: '', container: 'z-20' }, color: 'text-orange-500 dark:text-orange-500' } }">
                             <template #trailing>
                                 <UButton
                                     v-show="emptyValue !== ''"
@@ -44,7 +44,7 @@
                 </div>
 
                 <div 
-                    class="bg-gray-100 rounded-lg shadow-lg overflow-x-auto">
+                    class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
                     <div 
                         class="flex px-3 py-3.5 border-b gap-x-2 items-center border-orange-400">
                        <UFormGroup 
@@ -141,7 +141,7 @@
                         <div 
                             class="space-y-3">
                             <div>
-                                <span class="text-sm leading-5">
+                                <span class="text-sm leading-5 text-gray-600 dark:text-gray-200">
                                     Showing
                                     <span class="font-medium">{{ pageFrom }}</span>
                                     to
@@ -193,6 +193,7 @@ import {
 import { 
     MembershipHistory 
 } from '@/collector/expand-table';
+import type { container } from '@nuxt/ui/dist/runtime/ui.config';
 
 
 definePageMeta({

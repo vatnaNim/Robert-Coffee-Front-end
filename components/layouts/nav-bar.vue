@@ -2,9 +2,9 @@
     <nav
         class="w-full flex h-[60px] gap-x-3 px-2 py-1">
         <div 
-            class="bg-[#C4B6B6] text-white flex items-center flex-grow px-6 shadow-sm justify-between  rounded-lg">
+            class="bg-white/30 dark:bg-black/20  text-gray-600 dark:text-white border border-white dark:border-gray-100  flex items-center flex-grow px-6 shadow-md justify-between  rounded-lg">
             <p
-                class="font-semibold font-size-p text-white m-0 p-0 w-full lg:w-auto pl-7 lg:pl-0">
+                class="font-semibold font-size-p m-0 p-0 w-full lg:w-auto pl-7 lg:pl-0">
                 {{ title }}
             </p>
             <div 
@@ -16,9 +16,9 @@
                             class="whitespace-nowrap text-sm flex items-center gap-x-1.5">
                             <span>
                                 <Icon
-                                name="mdi:calendar-clock"
-                                class="text-white text-2xl"
-                            />
+                                    name="mdi:calendar-clock"
+                                    class="text-gray-600 dark:text-white text-2xl"
+                                />
                             </span>
                             <span
                                 class="font-size-watch">

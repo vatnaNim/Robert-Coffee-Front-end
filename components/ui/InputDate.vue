@@ -13,7 +13,7 @@
 			class="w-full"
 			:ui="{
 				icon: {
-				color: 'text-orange-500'
+				color: 'text-orange-500 dark:text-orange-500'
 				}
 			}"
 		/>

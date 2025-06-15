@@ -1,6 +1,6 @@
 <template>
     <div
-        class="bg-[#C4B6B6] rounded-lg shadow-md px-3 py-4 overflow-x-auto no-scrollbar text-nowrap space-y-3">
+        class="border-gray-200 dark:border-gray-700 rounded-xl shadow-md px-3 py-4 overflow-x-auto no-scrollbar text-nowrap space-y-3">
         <h2
             class="font-bold text-md uppercase text-orange-500">
             Change point History

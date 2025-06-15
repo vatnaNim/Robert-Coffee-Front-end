@@ -10,13 +10,13 @@
             </template>
             <template v-else>
                 <div 
-                    class="bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-6">
+                    class="bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-4">
                     <div 
                         class="flex justify-between items-end gap-2">
                         <div 
                             class="flex gap-x-2">
                             <PrimaryBtn
-                                name="Create Menu Category"
+                                name="btton"
                                 size="px-3 py-2 text-sm"
                                 @click="(): void => {
                                     togglePage('Create', true);
@@ -73,7 +73,7 @@
                         leave-to-class="opacity-0 scale-y-0">            
                         <div 
                             v-if="showFilter" 
-                            class="w-full space-y-3 px-4 py-4 bg-gray-100 rounded-xl shadow-sm flex flex-col">
+                            class="w-full space-y-4 px-4 py-4 bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white rounded-lg shadow-sm">
                             <span 
                                 class="flex gap-x-2">
                                 <Filter 
@@ -192,7 +192,7 @@
                         </div>
                     </Transition>
                     <div 
-                        class="bg-gray-100 rounded-lg shadow-lg overflow-x-auto">
+                        class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
                         <LazyUTable 
                             v-model:expand="expand"
                             :rows="people" 
@@ -287,7 +287,7 @@
                             <div 
                                 class="space-y-3">
                                 <div>
-                                    <span class="text-sm leading-5">
+                                    <span class="text-sm leading-5 text-gray-600 dark:text-gray-200">
                                         Showing
                                         <span class="font-medium">{{ pageFrom }}</span>
                                         to

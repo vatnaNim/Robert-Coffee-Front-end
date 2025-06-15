@@ -1,26 +1,27 @@
 <template>
     <div
         class="flex roboto-font">
-    <SideBar
-        @expand="toggleExpand"
-        @setTitle="showTitle"/>
-    <div
-        class="w-full bg-[#DFEBF9] block h-screen"
-        :class="{
-            'w-full lg:w-[calc(100%-288px)]': expand,
-            'w-full lg:w-[calc(100%-64px)]': !expand,
-        }">
-        <NavBar
-            :title="Title"/>
+        <SideBar
+            @expand="toggleExpand"
+            @setTitle="showTitle"/>
         <div
-            class="overflow-hidden px-2 pt-2 hover:overflow-y-auto h-[calc(100%-60px)] no-scrollbar ">
-            <NuxtPage/>
+            class="w-full bg-gray-200 dark:bg-gray-800  text-gray-900 block h-screen"
+            :class="{
+                'w-full lg:w-[calc(100%-288px)]': expand,
+                'w-full lg:w-[calc(100%-64px)]': !expand,
+            }">
+            <NavBar
+                :title="Title"/>
+            <div
+                class="overflow-hidden px-2 pt-2 hover:overflow-y-auto h-[calc(100%-60px)] no-scrollbar">
+                <NuxtPage/>
+            </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
+
 import SideBar from '@/components/layouts/side-bar.vue';
 import NavBar from '@/components/layouts/nav-bar.vue';
 

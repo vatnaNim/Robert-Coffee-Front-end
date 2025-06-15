@@ -1,37 +1,41 @@
 <template>
     <li
-        class="group py-2 w-full cursor-pointer hover:bg-[#803D3B] text-black"
+        class="group py-1.5 w-full cursor-pointer hover:bg-black/20 dark:hover:bg-gray-700 duration-150 backdrop-blur-sm"
         :class="{
-            'bg-[#803D3B]': route.path === path,
-            'bg-[#E4C59E] ': route.path !== path,
+            'bg-black/30 dark:bg-gray-700 border-l-4 border-sky-600': route.path === path,
+            'bg-gray-300  dark:bg-gray-900': route.path !== path,
             [className as string]: className
         }">
         <NuxtLink
             @click="$emit('setTitle', title)"
             :to="path"
-            class="flex gap-x-3  group-hover:text-white text-white text-nowrap"
+            class="flex items-center gap-x-3  group-hover:text-white text-gray-600 dark:text-white text-nowrap"
             :class="{
-                'ml-6': classTitle,
+                'ml-5': classTitle,
                 'ml-9': !classTitle
             }">
             <UIcon
                 v-if="typeof(icon) === 'string'"
                 :name="(icon as string)"
-                class="w-5 h-6"
+                class="w-6 h-5"
                 :class="{
-                    ' text-red-800': route.path === path,
-                    'group-hover:text-black text-black': route.path !== path
-                }"/>
+                    ' text-gray-600 dark:text-white': route.path === path,
+                    'text-gray-600 group-hover:text-white': route.path !== path
+                }"
+            />
             <component
                 v-else
-                :is="icon"/>
+                :is="icon"
+            />
             <span
                 :title="title"
-                class="font-medium font-size-p"
+                class="font-medium text-sm"
                 :class="{
                     'text-white': route.path === path,
                     [classTitle as string]: classTitle
-                }">{{ title }}</span>
+                }">
+                {{ title }}
+            </span>
         </NuxtLink>
     </li>
 </template>

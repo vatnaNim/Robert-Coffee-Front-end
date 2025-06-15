@@ -1,9 +1,9 @@
 <template>
     <li
-        class="group py-2 w-full hover:bg-[#803D3B] bg-[#E4C59E] cursor-pointer">
+        class="group py-1.5 w-full bg-gray-300  dark:bg-gray-900 cursor-pointer">
         <NuxtLink
             path="/login"
-            class="flex gap-x-3 text-white"
+            class="flex items-center gap-x-3 text-red-500"
             :class="{
                 'ml-9': isExpand,
                 'ml-6': !isExpand
@@ -11,7 +11,7 @@
             <UIcon
                 v-if="typeof(icon) === 'string'"
                 :name="(icon as string)"
-                class="text-2xl w-5 h-6"
+                class="w-4 h-4"
                 :class="{
                     'text-white': $route.path === path,
                     'group-hover:text-white ': $route.path !== path
@@ -20,7 +20,7 @@
                 v-else
                 :is="icon"/>
             <span
-                class="font-medium text-white group-hover:text-white font-size-p"
+                class="font-medium text-red-500 text-sm"
                 :class="{
                     'hidden': !isExpand
                 }">{{ label }}</span>

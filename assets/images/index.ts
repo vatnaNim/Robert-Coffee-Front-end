@@ -1,9 +1,9 @@
-import UserImage from './user-image.jpg';
 import Upload from './upload.png';
 import Logo from './logo.jpg';
+import User from './user.png';
 
 export {
     Upload,
-    UserImage,
-    Logo
+    Logo,
+    User
 };

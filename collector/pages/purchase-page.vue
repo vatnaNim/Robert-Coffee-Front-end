@@ -1,18 +1,18 @@
 <template>
     <form
-        class=" bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
+        class=" w-full bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8">
         <div 
             class="flex gap-x-3 items-center">
             <BackBtn
                 name="Back"
-                btn-class="bg-[#C4B6B6] py-2 px-8 text-white"
+                btn-class="bg-gray-300 dark:bg-gray-700 py-2 px-8 text-white"
                 icon-class="bg-white"
-                icon-container="bg-red-500"
+                icon-container="bg-red-600"
                 @click="emits('toggle', '', false)"
             />
             <h1 
                 class="text-orange-500 text-lg px-4 font-semibold">
-                {{ title }} Category
+                {{ title }} purchase
             </h1>
         </div>
     
@@ -26,7 +26,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500  font-semibold'
                         }
                     }">
                     <InputDate
@@ -40,7 +40,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUInput
@@ -57,7 +57,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUInput
@@ -75,7 +75,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUInput
@@ -92,7 +92,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <SelectMenu
@@ -115,7 +115,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUInput
@@ -132,7 +132,7 @@
                     class="w-[calc(96%/4)] flex-grow"
                     :ui="{
                         label: {
-                            base:'text-orange-500 font-semibold'
+                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUInput
@@ -150,7 +150,7 @@
                 class="w-[calc(96%/4)] flex-grow"
                 :ui="{
                     label: {
-                        base:'text-orange-500 font-semibold'
+                        base:'text-orange-500 dark:text-orange-500 font-semibold'
                     }
                 }">
                 <LazyUTextarea
@@ -192,7 +192,7 @@
                     :key="idx"
                     class="w-full px-3 py-4 shadow-md space-y-3">
                     <div 
-                        class="bg-gray-100 border px-4 py-5 rounded-lg shadow-sm space-y-3">
+                        class="bg-gray-100 dark:bg-gray-800  border px-4 py-5 rounded-lg shadow-sm space-y-3">
                         <div 
                             class="flex justify-end items-center">
                             <LazyUTooltip
@@ -224,11 +224,11 @@
                                 label="Image"
                                 :ui="{
                                     label: {
-                                        base:'text-orange-500 font-semibold'
+                                        base:'text-orange-500 dark:text-orange-500 font-semibold'
                                     }
                                 }">
                                 <div
-                                    class="flex flex-col items-center justify-center w-48 h-[180px] border-2 border-dashed border-black rounded-lg cursor-pointer relative overflow-hidden bg-white"
+                                    class="flex flex-col items-center justify-center w-48 h-[180px] border-2 border-dashed border-black rounded-lg cursor-pointer relative overflow-hidden bg-white dark:bg-gray-800"
                                     style="border: 2px dashed orange;">
                                     <ChooseImage name="image" />
                                 </div>
@@ -241,7 +241,7 @@
                                     class="w-[calc(96%/4)] flex-grow"
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                     <SelectMenu
@@ -265,7 +265,7 @@
                                     class="w-[calc(96%/4)] flex-grow"
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                 <LazyUInput
@@ -283,7 +283,7 @@
                                     class=" "
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                     <div 
@@ -319,7 +319,7 @@
                                     class="w-[calc(96%/4)] flex-grow"
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                     <div 
@@ -353,7 +353,7 @@
                                     class="w-[calc(96%/4)] flex-grow"
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                     <SelectMenu
@@ -377,7 +377,7 @@
                                     class="w-[calc(96%/4)] flex-grow"
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }">
                                     <SelectMenu
@@ -400,7 +400,7 @@
                                     name=""
                                     :ui="{
                                         label: {
-                                            base:'text-orange-500 font-semibold'
+                                            base:'text-orange-500 dark:text-orange-500 font-semibold'
                                         }
                                     }"
                                     class="w-full">

@@ -11,6 +11,15 @@ import Filter from "./filter.vue";
 import Switch from "./switch.vue";
 import Rial from "./rial.vue";
 import Search from "./search.vue";
+import ShoppingCart from "./shopping-cart.vue";
+import CloseLine from "./close-line.vue";
+import More from "./more.vue";
+import Purchase from "./purchase.vue";
+import PurchaseList from "./purchase-list.vue";
+import PurchaseHistory from "./purchase-history.vue";
+import Setting from "./setting.vue";
+import History from "./history.vue";
+import MenuListIcon from "./menuList-icon.vue";
 
 export { 
     ArrowBack,
@@ -25,5 +34,14 @@ export {
     Filter,
     Switch,
     Rial,
-    Search
+    Search,
+    ShoppingCart,
+    CloseLine,
+    More,
+    Purchase,
+    PurchaseList,
+    PurchaseHistory,
+    Setting,
+    History,
+    MenuListIcon
 };

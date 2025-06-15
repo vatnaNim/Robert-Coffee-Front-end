@@ -22,7 +22,7 @@
                 },
                 color: {
                     white: {
-                        outline: selected[valueAttribute] == null ? 'dark:bg-gray-400 text-gray-400' : 'dark:bg-gray-900 text-gray-900'
+                        outline: selected[valueAttribute] == null ? 'text-gray-400' : 'text-gray-900'
                     }
                 },
                 ...ui

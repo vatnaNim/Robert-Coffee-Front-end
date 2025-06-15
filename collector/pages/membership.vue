@@ -1,13 +1,13 @@
 <template>
     <form
-        class="w-full bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
+        class="w-full bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8">
         <div 
             class="flex gap-x-3 items-center">
             <BackBtn
                 name="Back"
-                btn-class="bg-[#C4B6B6] py-2 px-8 text-white"
+                btn-class="bg-gray-300 dark:bg-gray-700 py-2 px-8 text-white"
                 icon-class="bg-white"
-                icon-container="bg-red-500"
+                icon-container="bg-red-600"
                 @click="emits('toggle', '', false)"
             />
             <h1 
@@ -41,7 +41,7 @@
                             label="Name"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -57,7 +57,7 @@
                             label="Gender"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -88,7 +88,7 @@
                             label="Tel"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -113,7 +113,7 @@
                             label="Email"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -130,7 +130,7 @@
                             label="Point"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -148,7 +148,7 @@
                             label="Approach by"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">
@@ -167,7 +167,7 @@
                             label="Remark"
                             :ui="{
                                 label:{
-                                    base: 'text-orange-500'
+                                    base: 'text-orange-500 dark:text-orange-500'
                                 }
                             }"
                             class="flex-1">

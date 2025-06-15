@@ -11,7 +11,7 @@
         </template>
         <template v-else>
             <div 
-                class="bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
+                class="bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-4">
                 <div 
                     class="flex justify-between items-center">
                     <div  
@@ -48,7 +48,7 @@
                         color="amber"
                         :ui="{ icon: { 
                             trailing: { pointer: '' },
-                            color: 'text-orange-500' } }">
+                            color: 'text-orange-500 dark:text-orange-400' } }">
                         <template #trailing>
                         <UButton
                             v-show="emptyValue !== ''"
@@ -70,7 +70,7 @@
                     leave-to-class="opacity-0 scale-y-0">
                     <div 
                         v-if="showFilter"
-                        class="w-full space-y-4 px-4 py-4 bg-gray-100 rounded-xl shadow-sm">
+                        class="w-full space-y-4 px-4 py-4 bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white rounded-lg shadow-sm">
                         <span
                             class="flex gap-x-2">
                             <Filter
@@ -158,23 +158,14 @@
                     </div>
                 </Transition>
                 <div 
-                    class="bg-gray-100 rounded-lg shadow-lg overflow-x-auto">
+                    class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
 					<LazyUTable
-                        v-model:expand="expand"
                         :rows="rows"
                         :columns="selectedColumns"
                         :ui="{
                             divide: 'divide-orange-400',
                             th: { base: 'text-orange-400 text-nowrap' }
                         }">
-                        <template #expand="{ row }">
-                            <TransitionGroup
-                                tag="div"
-                                name="drop" 
-                                class="p-4">
-                                <MenuList :key="row.id"/>
-                            </TransitionGroup>
-                        </template>
                         <template #image-data="{ row }">
                             <TooltipImage
                                 :scr="row.image"
@@ -232,7 +223,7 @@
                         <div 
                             class="space-y-3">
                             <div>
-                                <span class="text-sm leading-5">
+                                <span class="text-sm leading-5 text-gray-600 dark:text-gray-200">
                                     Showing
                                     <span class="font-medium">{{ pageFrom }}</span>
                                     to

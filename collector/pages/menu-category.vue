@@ -1,13 +1,13 @@
 <template>
     <form
-        class="w-full bg-white px-5 py-8 rounded-lg shadow-md flex flex-col gap-y-8">
+        class="w-full bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8">
         <div 
             class="flex gap-x-3 items-center">
             <BackBtn
                 name="Back"
-                btn-class="bg-[#C4B6B6] py-2 px-8 text-white"
+                btn-class="bg-gray-300 dark:bg-gray-700 py-2 px-8 text-white"
                 icon-class="bg-white"
-                icon-container="bg-red-500"
+                icon-container="bg-red-600"
                 @click="emits('toggle', '', false)"
             />
             <h1 
@@ -15,24 +15,10 @@
                 {{ title }} Category
             </h1>
         </div>
-    
         <div 
             class="w-full flex flex-col justify-start items-start gap-y-8 ">
             <div 
                 class="w-full flex justify-center items-center gap-x-2">
-                <UFormGroup
-                name=""
-                label="Image"
-                :ui="{
-                    label: {
-                        base: 'text-orange-500'
-                    }
-                }">
-                <div
-                    class="flex flex-col items-center justify-center w-[180px] h-[180px] border-2 border-dashed !border-red-500 rounded-lg cursor-pointer relative overflow-hidden">
-                    <ChooseImage name="image" />
-                </div>
-            </UFormGroup>
             </div>
             <div 
                 class="flex w-full justify-center items-center gap-x-2">
@@ -94,6 +80,34 @@
                         name=""
                         size="sm"
                         placeholder="Please select menu type"
+                    />
+                </UFormGroup>
+                <UFormGroup
+                    name=""
+                    label="Items"
+                    class="flex-1"
+                    :ui="{
+                        label: {
+                            base: 'text-orange-500'
+                        }
+                    }">
+                   <SelectMenu
+                        option-attribute="value"
+                        value-attribute="value"
+                        :options="[
+                            {
+                                label: 'Food',
+                                value: 'food'
+                            },
+                            {
+                                label: 'Drink',
+                                value: 'drink'
+                            },
+                        ]"
+                        name=""
+                        size="sm"
+                        placeholder="Please select items of this category"
+                        multiple
                     />
                 </UFormGroup>
             </div>    

@@ -3,29 +3,36 @@
         <aside
             ref="sidebar"
             id="side-bar"
-            class="h-screen bg-[#C4B6B6] overflow-x-hidden transition-all shadow"
+            class="h-screen bg-gray-50 dark:bg-gray-800 overflow-x-hidden transition-all shadow"
             :class="{
                 'lg:w-72': expand,
                 'lg:w-16': !expand,
                 'block lg:hidden fixed inset-0 w-64 bg-[#C4B6B6] z-[80]': mobileExpand,
-                'hidden lg:block': !mobileExpand,
+                'hidden lg:block border-r border-gray-600 dark:border-white': !mobileExpand,
             }">
             <div
-                class="w-full h-[60px] flex items-center justify-between bg-[#C4B6B6] py-0.5">
+                class="w-full h-[60px] flex items-center justify-between bg-gray-50 dark:bg-gray-800 py-0.5 border-b border-gray-400 shadow-sm">
                 <div class=""></div>
-                <div 
-                    class="rounded-full overflow-hidden w-12 h-12 flex flex-col">
-                    <img
-                        :src="Logo"
-                        alt="logo"
-                        loading="lazy"
-                        class="rounded-full"
-                        :class="{
-                            'hidden': !expand,
-                            'w-full h-full object-scale-down': expand
-                        }"
-                    />
-                </div>
+                <article
+                    :class="`flex items-center gap-x-2 text-gray-600 dark:text-white ${expand? '' : 'hidden'}`">
+                    <div 
+                        class="rounded-full overflow-hidden w-10 h-10">
+                        <img
+                            :src="Logo"
+                            alt="logo"
+                            loading="lazy"
+                            class="rounded-full"
+                            :class="{
+                                'hidden': !expand,
+                                'w-full h-full object-scale-down': expand
+                            }"
+                        />
+                    </div>
+                    <h1
+                        :class="`text-sm font-semibold uppercase  ${expand? 'block': 'hidden'}`">
+                        Robert coffee
+                    </h1>
+                </article>
                 <button
                     @click="() => {
                         $emit('expand', !expand);
@@ -34,200 +41,94 @@
                     type="button"
                     class="px-2 lg:block hidden text-[#131010]">
                     <ArrowBack
+                        class="text-sky-600 dark:text-sky-700"
                         :class="{
                             '-rotate-180': !expand
-                        }"/>
+                        }"
+                    />
                 </button>
             </div>
             <ul
                 role="list"
-                class="list-none flex flex-col gap-y-1 overflow-hidden hover:overflow-y-auto h-[calc(100%-60px)] no-scrollbar">
+                class="list-none flex flex-col overflow-hidden hover:overflow-y-auto h-[calc(100%-60px)] no-scrollbar">
                 <MenuList
                     :icon="Dashboard"
                     title="Dashboard"
                     path="/"
                     :class-title="expand ? '' : 'hidden'"
                     @click="() => handleClose('/')"
-                    @set-title="showTitle"/>
-                <SectionList
-                    :class-title="expand ? '' : 'hidden'"
-                    label="Point of Sale"/>
+                    @set-title="showTitle"
+                />
                 <MenuList
                     :icon="ScreenSale"
                     title="Screen Sale"
                     path="/screen-pos"
                     :class-title="expand ? '' : 'hidden'"
                     @click="() => handleClose('/screen-pos')"
-                    @set-title="showTitle"/>
+                    @set-title="showTitle"
+                />
                 <MenuList
                     :icon="CustomerLists"
                     title="Customer List"
                     path="/customer-list"
                     :class-title="expand ? '' : 'hidden'"
                     @click="() => handleClose('/customer-list')"
-                    @set-title="showTitle"/>
+                    @set-title="showTitle"
+                />
                 <MenuList
                     :icon="Membership"
                     title="Membership"
                     path="/membership"
                     :class-title="expand ? '' : 'hidden'"
                     @click="() => handleClose('/membership')"
-                    @set-title="showTitle"/>
-                <SectionList
+                    @set-title="showTitle"
+                />
+                <AccordionMenu
+                    :icon="Product"
+                    title="Menu"
+                    :index="1"
+                    :active-index="activeIndex"
                     :class-title="expand ? '' : 'hidden'"
-                    label="PRODUCT MENU"/>
-                    <AccordionMenu
-                        :icon="Product"
-                        title="Menu"
-                        :index="1"
-                        :active-index="activeIndex"
-                        :class-title="expand ? '' : 'hidden'"
-                        @toggle-accordion="toggleAccordion">
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Menu List"
-                            path="/menu-list"
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/menu-list')"
-                            @set-title="showTitle"/>
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Menu Category"
-                            path="/menu-category"
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/menu-category')"
-                            @set-title="showTitle"/>
-                    </AccordionMenu>
+                    @toggle-accordion="toggleAccordion">
                     <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Accessory Gift"
-                            path="/accessory-gift"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/accessory-gift')"
-                            @set-title="showTitle"/>
-                    <SectionList
-                        :class-title="expand ? '' : 'hidden'"
-                        label="PURCHASE"/>
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Purchase List"
-                            path="/purchase-list"
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('/purchase-list')"
-                            @set-title="showTitle"
-                        />
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Return PO"
-                            path=""
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('')"
-                            @set-title="showTitle"
-                        />
-                <SectionList
-                    :class-title="expand ? '' : 'hidden'"
-                    label="Stock"/>
-                    <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="Stock Lists"
-                        path=""
+                        :icon="MenuListIcon"
+                        title="Menu List"
+                        path="/menu-list"
                         class-name="pl-3"
                         :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                <SectionList
-                    :class-title="expand ? '' : 'hidden'"
-                    label="Report"/>
+                        @click="() => handleClose('/menu-list')"
+                        @set-title="showTitle"/>
                     <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="End Report"
-                        path=""
+                        :icon="Category"
+                        title="Menu Category"
+                        path="/menu-category"
                         class-name="pl-3"
                         :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                    <AccordionMenu
-                        :icon="Product"
-                        title="Purchase Report"
-                        :index="3"
-                        :active-index="activeIndex"
-                        :class-title="expand ? '' : 'hidden'"
-                        @toggle-accordion="toggleAccordion">
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Daily Report"
-                            path=""
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('')"
-                            @set-title="showTitle"
-                        />
-                    </AccordionMenu>   
-                    <AccordionMenu
-                        :icon="Product"
-                        title="Supplier Report"
-                        :index="4"
-                        :active-index="activeIndex"
-                        :class-title="expand ? '' : 'hidden'"
-                        @toggle-accordion="toggleAccordion">
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Income Supplier"
-                            path=""
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('')"
-                            @set-title="showTitle"
-                        />
-                        <MenuList
-                            icon="icon-park-outline:ad-product"
-                            title="Daily Report"
-                            path=""
-                            class-name="pl-3"
-                            :class-title="expand ? '' : 'hidden'"
-                            @click="() => handleClose('')"
-                            @set-title="showTitle"
-                        />
-                    </AccordionMenu>
-                <SectionList
+                        @click="() => handleClose('/menu-category')"
+                        @set-title="showTitle"/>
+                </AccordionMenu>
+                <MenuList
+                    :icon="Purchase"
+                    title="Purchase List"
+                    path="/purchase-list"
                     :class-title="expand ? '' : 'hidden'"
-                    label="General Settings"/>   
-                    <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="Purchase"
-                        path=""
-                        :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                    <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="User Management"
-                        path=""
-                        :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                    <MenuList
-                        icon="icon-park-outline:ad-product"
-                        title="System Setting"
-                        path=""
-                        :class-title="expand ? '' : 'hidden'"
-                        @click="() => handleClose('')"
-                        @set-title="showTitle"
-                    />
-                    <DisableMenu
-                        @click="logout"
-                        :icon="LogOut"
-                        label="Logout"
-                        :is-expand="expand"
-                    />
+                    @click="() => handleClose('/purchase-list')"
+                    @set-title="showTitle"
+                />
+                <MenuList
+                    :icon="Setting"
+                    title="Settings"
+                    path="/settings"
+                    :class-title="expand ? '' : 'hidden'"
+                    @click="() => handleClose('/settings')"
+                    @set-title="showTitle"
+                />
+                <DisableMenu
+                    @click="logout"
+                    :icon="LogOut"
+                    label="Logout"
+                    :is-expand="expand"
+                /> 
             </ul>
         </aside>
         <button
@@ -265,7 +166,12 @@ import {
     CustomerLists,
     Product,
     Membership,
-    LogOut
+    LogOut, 
+    History,
+    Setting,
+    Purchase,
+    PurchaseList,
+    MenuListIcon
 } from '../icons';
 import {
     storeToRefs
@@ -273,6 +179,7 @@ import {
 import { useMediaQuery } from "@vueuse/core";
 import { Confirm } from '@/utils/dialog/';
 import { Logo } from '@/assets/images';
+import Category from '../icons/category.vue';
 
 /**
  * Begin::Set event trigger to parent component
