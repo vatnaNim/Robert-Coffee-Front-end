@@ -1,31 +1,31 @@
 import {
-    ref
-  } from "vue";
-  import Swal from "sweetalert2";
-  import {
-    useRouter,
-    type Router
-  } from "vue-router";
-  import {
-    useCookie,
-    type CookieRef
-  } from "nuxt/app";
+  ref
+} from "vue";
+import Swal from "sweetalert2";
+import {
+  useRouter,
+  type Router
+} from "vue-router";
+import {
+  useCookie,
+  type CookieRef
+} from "nuxt/app";
 
-  
-  export function useAPI(){
-    const BASE_URL: string = import.meta.env.NUXT_PUBLIC_API_URL;
-    const token: CookieRef<string | null> = useCookie<string | null>('Robert_token');
+export function useAPI(){
+    const config = useRuntimeConfig();
+    const BASE_URL: string = config.public.NUXT_PUBLIC_API_URL;
+    const token: CookieRef<string | null> = useCookie<string | null>('robert_token');
     const router: Router = useRouter();
     const isLoading: Ref<boolean> = ref<boolean>(false);
-  
+
     const postApi = (method_type: string, endpoint: string, formData?: any): Promise<object> => {
       isLoading.value = true;
-  
+
       return fetch(`${BASE_URL}/${endpoint}`, {
         method: method_type,
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token.value}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
         },
         body: JSON.stringify(formData)
       })
@@ -52,7 +52,7 @@ import {
               toast.onmouseleave = Swal.resumeTimer;
             }
           });
-  
+
           return result;
         }
         else{
@@ -80,10 +80,10 @@ import {
         isLoading.value = false;
       });
     };
-  
+
     const fetchApi = async (method_type: string, endpoint: string): Promise<object | any> => {
       isLoading.value = true;
-  
+
       try{
         const response = await fetch(`${BASE_URL}/${endpoint}`, {
           method: method_type,
@@ -92,13 +92,13 @@ import {
             Authorization: `Bearer ${token.value}`,
           }
         });
-  
+
         if(response.status === 401){
           token.value = null;
           router.push('/signin');
           return;
         }
-  
+
         const result: any = await response.json();
         if(result.error){
           Swal.fire({
@@ -115,7 +115,7 @@ import {
             }
           });
         }
-  
+
         return result;
       }
       catch(error){
@@ -126,11 +126,10 @@ import {
         isLoading.value = false;
       }
     };
-  
+
     return {
       postApi,
       fetchApi,
       isLoading
     };
-  }
-
+}

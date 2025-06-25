@@ -6,17 +6,17 @@
         class="object-scale-down cursor-pointer hover:shadow-md"
         :class="[smallSize, base]"
         :src="scr"
-        alt="small images"
+        alt="No Image Avalible"
     />
     <div
         v-if="fullViewImage"
         :class="container"
-        class="fixed bg-white shadow-md flex items-center justify-center rounded-md border border-gray-300 z-20"
+        class="fixed  shadow-md flex items-center justify-center rounded-lg border backdrop-blur-sm bg-white/20 dark:bg-black/30 border-gray-400 dark:border-gray-400 z-20"
         :style="bigImagePosition">
         <img
             class="w-full h-full object-scale-down"
             :src="scr"
-            alt="Full Image"
+            alt="No Image Avalible"
         />
     </div>
 </template>

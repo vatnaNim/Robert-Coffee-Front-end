@@ -2,10 +2,14 @@ import Swal, { type SweetAlertResult } from "sweetalert2";
 
 const swalWithTailwindButtons = Swal.mixin({
     customClass: {
-        confirmButton: "text-md px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition-all duration-300",
-        cancelButton: "text-md px-5 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md shadow-md transition-all duration-300",
-        actions: "space-x-3"
+        popup: 'liquid-glass-popup',
+        title: 'text-gray-600 dark:text-white',
+        htmlContainer: 'text-md text-gray-600 dark:text-white',
+        confirmButton: "text-md px-5 py-2 bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-md shadow-md transition-all duration-300",
+        cancelButton: "text-md px-5 py-2 bg-red-400 dark:bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md shadow-md transition-all duration-300",
+        actions: "space-x-3",
     },
+    background: 'transparent',
     buttonsStyling: false
 });
 
@@ -40,7 +44,7 @@ const Confirm = (
             swalWithTailwindButtons.fire({
             title: cancelTitle,
             text: cancelText,
-            icon: "error"
+            icon: "error",
             });
         }
     });

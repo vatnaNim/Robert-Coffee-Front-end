@@ -13,6 +13,7 @@
     "@nuxt/ui": "^2.21.1",
     "@pinia/nuxt": "^0.10.1",
     "axios": "^1.8.3",
+    "chart.js": "^4.5.0",
     "date-fns": "^4.1.0",
     "nuxt": "^3.16.1",
     "pinia": "^3.0.1",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.17",
     "@iconify-json/solar": "^1.2.2",
+    "@types/chart.js": "^2.9.41",
     "@types/vue-router": "^2.0.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",

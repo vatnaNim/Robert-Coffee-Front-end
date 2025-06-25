@@ -1,58 +1,12 @@
 <template>
     <div 
         v-for="(item, idx) in cartItems"
-        class="relative w-56 h-[40vh] bg-gray-100 px-2 py-3 flex flex-col gap-y-3 rounded-lg shadow group">
-        <div 
-            class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div 
-                class="relative">
-                <LazyUPopover
-                    mode="hover">
-                    <More 
-                        class="w-6 h-6 z-10 cursor-pointer text-orange-500"/>
-                    <template #panel>
-                        <div 
-                            class="w-52 p-4 text-sm">
-                            <div 
-                                class="">
-                                <span>
-                                    Sugar:
-                                </span>
-                                <span
-                                    class="text-orange-500 font-semibold">
-                                    25%
-                                </span>
-                            </div>
-                            <div 
-                                class="">
-                                <span>
-                                    Ice:
-                                </span>
-                                <span
-                                    class="text-orange-500 font-semibold">
-                                    25%
-                                </span>
-                            </div>
-                            <div 
-                                class="text-wrap">
-                                <span>
-                                    Remark:
-                                </span>
-                                <span
-                                    class="text-orange-500">
-                                    No data
-                                </span>
-                            </div>
-                        </div>
-                    </template>
-                </LazyUPopover>
-            </div>
-        </div>
-    
+        :key="idx"
+        class="relative w-56 h-[40vh] bg-gray-100 dark:bg-gray-900  border border-gray-400 dark:border-gray-200 px-2 py-3 flex flex-col gap-y-3 rounded-xl shadow group">
         <div 
             class="w-full h-32 overflow-hidden rounded-lg">
             <img 
-                src="" 
+                src="https://t4.ftcdn.net/jpg/01/16/61/93/360_F_116619399_YA611bKNOW35ffK0OiyuaOcjAgXgKBui.jpg" 
                 alt=""
                 class="object-scale-down w-full h-full"    
             />
@@ -62,18 +16,18 @@
             <div 
                 class="space-x-2">
                 <span
-                    class="text-lg font-semibold">
+                    class="text-sm uppercase font-bold text-orange-500 dark:text-orange-500">
                     Ice Latte
                 </span>
                 <span
-                    class="text-orange-400">
+                    class="text-green-500 dark:text-green-500 text-sm">
                     $ 4.00
                 </span>
             </div>
             <div 
                 class="flex items-center gap-x-1">
                 <span
-                    class="text-orange-500 text-sm ">
+                    class="text-orange-500 dark:text-orange-500 text-sm ">
                     Size:
                 </span>
                 <div 
@@ -85,7 +39,7 @@
                         color="amber"
                         :variant="menuListvariant === size.value ? 'solid' : 'outline'"
                         :trailing="false"
-                        class="px-3 capitalize"
+                        class="px-2 py-1 capitalize"
                         @click="handleMenuClick(size.value)"
                     />
                 </div>
@@ -93,7 +47,7 @@
             <div 
                 class="w-full space-x-2 text-sm">
                 <span
-                    class="text-orange-500">
+                    class="text-orange-500 dark:text-orange-500 text-sm ">
                     Customize: 
                 </span>
                 <LazyUButton
@@ -101,6 +55,7 @@
                     variant="soft"
                     color="amber"
                     label="Add Topping"
+                    class="px-2 py-1 capitalize"
                     @click="(state: boolean): void => {
                         toggleCustomize(true)
                     }"
@@ -108,61 +63,59 @@
             </div>
             <div 
                 class="flex gap-x-1">
-         
-                    <div 
-                        class=" flex items-center">
-                        <LazyUButton
-                            size="xs"
-                            square
-                            color="amber"
-                            :variant="qty === 1? 'soft': 'solid'"
-                            icon="material-symbols:check-indeterminate-small-rounded"
-                            @click="qty > 1 && qty--"
-                            :disabled="qty === 1"
-                        />
-                        <LazyUInput
-                            name=""
-                            size="xs"
-                            color="amber"
-                            variant="none"
-                            class="w-8 font-semibold"
-                            disabled
-                            v-model="qty"
-                        />
-                        <LazyUButton
-                            size="xs"
-                            square
-                            color="amber"
-                            icon="material-symbols:add-2-rounded"
-                            @click="qty++"
-                        />
+                <div 
+                    class=" flex items-center">
+                    <LazyUButton
+                        size="xs"
+                        square
+                        color="amber"
+                        :variant="qty === 1? 'soft': 'solid'"
+                        icon="material-symbols:check-indeterminate-small-rounded"
+                        @click="qty > 1 && qty--"
+                        :disabled="qty === 1"
+                    />
+                    <LazyUInput
+                        name=""
+                        size="xs"
+                        color="amber"
+                        variant="none"
+                        class="w-8 font-semibold"
+                        disabled
+                        v-model="qty"
+                    />
+                    <LazyUButton
+                        size="xs"
+                        square
+                        color="amber"
+                        icon="material-symbols:add-2-rounded"
+                        @click="qty++"
+                    />
                 </div>
                 <div 
                     class="w-full">
                     <LazyUButton
-                        size="sm"
+                        size="xs"
                         variant="solid"
                         color="amber"
                         block>
                         <template #trailing>
                             <span>
                                 <ShoppingCart
-                                    class="w-5 h-5"/>
+                                    class="w-4 h-4"/>
                             </span>
                         </template>
                     </LazyUButton>
                 </div>
             </div>
         </div>
-        
     </div>
     <ClientOnly>
-        <CustomizeToppings
-            :open="openCustomize"
-            @update:data=""
-            @toggle="(state: boolean): void => {
-                toggleCustomize(state)
-            }"
+    <CustomizeToppings
+        :open="openCustomize"
+        @update:data=""
+        @toggle="(state: boolean): void => {
+            toggleCustomize(state)
+        }"
     />
     </ClientOnly>
 </template>

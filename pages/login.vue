@@ -94,7 +94,7 @@ const closeNotification = (): void => {
 
 const login = async (): Promise<void> => {
   try {
-    const response = await fetch(`${useRuntimeConfig().public.NUXT_PUBLIC_API_URL}/api/login`, {
+    const response = await fetch(`${useRuntimeConfig().public.NUXT_PUBLIC_API_URL}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -39,10 +39,9 @@ import {
 } from "vue-router";
 import { Confirm } from '@/utils/dialog';
 import { User } from '@/assets/images';
+import { useDarkMode } from '@/composables/useDarkMode';
+import { useFullscreen } from '@/composables/useFullScreen';
 
-definePageMeta({
-    colorMode: 'light'
-})
 
 /**
  * Begin::Declare variable section
@@ -50,8 +49,9 @@ definePageMeta({
 
 const authStore = useAuthStore();
 const { username, userImage, role } = storeToRefs(authStore);
-const isFullscreen: Ref<boolean> = ref<boolean>(false);
-const colorMode: Ref<boolean> = ref<boolean>(false);
+const { isFullscreen, toggleFullscreen } = useFullscreen()
+const { darkColor, toggle } = useDarkMode();
+
 
 interface DropdownItem {
     label: string;
@@ -78,29 +78,13 @@ const items: Ref<DropdownItem[][]> = computed(() => [
         disabled: true
     },
     {
-        label: colorMode.value ? 'Light Mode' : 'Dark Mode',
-        icon: colorMode.value
+        label: darkColor.value ? 'Light Mode' : 'Dark Mode',
+        icon: darkColor.value
             ? 'material-symbols:light-mode-outline'
             : 'material-symbols:dark-mode-outline',
         iconClass: 'text-gray-600 dark:text-white',
         class:'hover:backdrop-blur-md text-gray-600 dark:text-white',
-        click: (): void => {
-            const html = document.documentElement;
-            const darkMode = html.classList.contains('dark');
-            if (darkMode) 
-            {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                localStorage.setItem('theme', 'light');
-            } 
-            else 
-            {
-                html.classList.remove('light');
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-            colorModeIcon();
-        }
+        click: (): void => toggle()
     },
     {
         label: isFullscreen.value ? 'ExitScreen' : 'FullScreen',
@@ -108,7 +92,7 @@ const items: Ref<DropdownItem[][]> = computed(() => [
         iconClass: "text-gray-600 dark:text-white",
         class: 'hover:backdrop-blur-md text-gray-600 dark:text-white',
         click: async (): Promise<void> => {
-            await toggleFullscreen();
+            await toggleFullscreen()
         }
     },
     {
@@ -145,108 +129,4 @@ const logout = (): void => {
     );
 };
 
-const toggleFullscreen = async (): Promise<void> => {
-// @ts-ignore
-if(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
-{
-    handleExitFullscreen();
-    isFullscreen.value = false;
-}
-else
-{
-    await handleRequestFullscreen();
-    isFullscreen.value = true;
-}
-}
-
-const handleRequestFullscreen = async (): Promise<void> => {
-const body: HTMLBodyElement = document.body as HTMLBodyElement;
-if(await body.requestFullscreen)
-{
-    body.requestFullscreen();
-}
-// @ts-ignore
-else if(await body.mozRequestFullScreen)
-{
-    // @ts-ignore
-    body.mozRequestFullScreen();
-}
-// @ts-ignore
-else if(await body.webkitRequestFullscreen)
-{
-    // @ts-ignore
-    body.webkitRequestFullscreen();
-}
-// @ts-ignore
-else if(body.msRequestFullscreen)
-    {
-        // @ts-ignore
-        body.msRequestFullscreen();
-    }
-}
-
-const handleExitFullscreen = (): void => {
-if(document.exitFullscreen)
-{
-    document.exitFullscreen();
-}
-// @ts-ignore
-else if(document.mozCancelFullScreen)
-{
-    // @ts-ignore
-    document.mozCancelFullScreen();
-}
-// @ts-ignore
-else if(document.webkitExitFullscreen)
-{
-    // @ts-ignore
-    document.webkitExitFullscreen();
-}
-// @ts-ignore
-else if(document.msExitFullscreen)
-{
-    // @ts-ignore
-    document.msExitFullscreen();
-}
-}
-
-
-const checkFullscreen = async (): Promise<void> => {
-// @ts-ignore
-if(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
-{
-    handleRequestFullscreen();
-    isFullscreen.value = true;
-}
-else
-{
-    isFullscreen.value = false;
-}
-}
-
-const colorModeIcon = (): void => {
-  const html = document.documentElement;
-  colorMode.value = html.classList.contains('dark');
-};
-
-/**
- * End::Some logical in this component
- */
-
-onMounted(async (): Promise<void> => {
-    await checkFullscreen();
-
-    const theme = localStorage.getItem('theme');
-    const html = document.documentElement;
-
-    if (theme === 'dark') {
-        html.classList.add('dark');
-        html.classList.remove('light');
-    } else {
-        html.classList.add('light');
-        html.classList.remove('dark');
-    }
-
-    colorModeIcon();
-});
 </script>

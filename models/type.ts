@@ -17,6 +17,7 @@ interface ResponseStatus
     status: string,
     message: string,
     errors: object,
+    total_items: number
     data: object | null
 }
 

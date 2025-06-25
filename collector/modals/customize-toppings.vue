@@ -1,10 +1,16 @@
 <template>
     <LazyUModal 
-        v-bind:model-value="open">
+        v-bind:model-value="open"
+        :ui="{
+            base: 'backdrop-blur-sm border border-white/30',
+            background: 'bg-white/30 dark:bg-black/30 ',
+            rounded: 'rounded-2xl',
+            shadow: 'shadow-lg'
+        }">
         <div 
-            class="p-3 space-y-3">
+            class="p-4 space-y-3">
             <div 
-                class="flex justify-between items-center">
+                class="flex justify-between items-center border-b border-orange-500 dark:border-orange-500 pb-2">
                 <h1 class="text-lg font-semibold text-orange-400">
                     Customize Items
                 </h1>
@@ -22,13 +28,13 @@
                 </LazyUButton>
             </div>
             <div 
-                class="bg-gray-100 py-2 px-3 rounded-md shadow-sm space-y-2">
+                class="space-y-2">
                 <LazyUFormGroup
                     name=""
                     label="Sugar"
                     :ui="{
                         label:{
-                            base: 'text-orange-400 font-semibold'
+                            base: 'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <SelectMenu
@@ -72,7 +78,7 @@
                     label="Ice"
                     :ui="{
                         label:{
-                            base: 'text-orange-400 font-semibold'
+                            base: 'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <SelectMenu
@@ -116,7 +122,7 @@
                     label="Remark"
                     :ui="{
                         label:{
-                            base: 'text-orange-400 font-semibold'
+                            base: 'text-orange-500 dark:text-orange-500 font-semibold'
                         }
                     }">
                     <LazyUTextarea
@@ -128,7 +134,7 @@
                 </LazyUFormGroup>
             </div>
             <div 
-                class="flex justify-end gap-x-2">
+                class="flex justify-end gap-x-2 mt-3">
                 <LazyUButton
                     type="reset"
                     label="Cancel"
@@ -138,7 +144,7 @@
                 />
                 <LazyUButton
                     type="submit"
-                    label="Save"
+                    label="Okay"
                     size="sm"
                     color="amber"
                 />

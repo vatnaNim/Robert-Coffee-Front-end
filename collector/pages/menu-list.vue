@@ -1,7 +1,12 @@
 <template>
     <form
         class="w-full bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8"
-        @submit.prevent="">
+        name="menuList"
+        method="POST"
+        enctype="multipart/form-data"
+        @submit.prevent="async (): Promise<void> => {
+            await submitMenuList();
+        }">
         <div 
             class="flex items-center">
             <BackBtn
@@ -21,7 +26,7 @@
             <div 
                 class="w-full flex space-x-3">
                 <UFormGroup
-                    name=""
+                    name="image"
                     label="Image"
                     :ui="{
                         label: {
@@ -30,13 +35,16 @@
                     }">
                     <div
                         class="flex flex-col items-center justify-center w-48 h-[180px] border-2 border-dashed !border-red-500 rounded-lg cursor-pointer relative overflow-hidden">
-                        <ChooseImage name="image" />
+                        <ChooseImage 
+                            name="image" 
+                            v-model="_form.image" 
+                        />
                     </div>
                 </UFormGroup>
                 <div 
                     class="flex-1 border rounded-xl shadow space-y-2 p-4 bg-white/50 dark:bg-black/40">
                     <UFormGroup
-                        name=""
+                        name="pro_code"
                         label="#Code"
                         :ui="{
                             label:{
@@ -44,14 +52,15 @@
                             }
                         }">
                         <UInput
-                            name="code"
+                            name="pro_code"
                             color="amber"
                             size="sm"
+                            v-model="_form.pro_code"
                             placeholder="Please enter list code "
                         />
                     </UFormGroup>
                     <UFormGroup
-                        name=""
+                        name="name_en"
                         label="Name (Eng)"
                         :ui="{
                             label:{
@@ -59,14 +68,15 @@
                             }
                         }">
                         <UInput
-                            name=""
+                            name="name_en"
                             color="white"
                             size="sm"
+                            v-model="_form.name_en"
                             placeholder="Please enter name as English"
                         />
                     </UFormGroup>
                     <UFormGroup
-                        name=""
+                        name="name_kh"
                         label="Name (KH)"
                         :ui="{
                             label:{
@@ -74,9 +84,10 @@
                             }
                         }">
                         <UInput
-                            name=""
+                            name="name_kh"
                             color="white"
                             size="sm"
+                            v-model="_form.name_kh"
                             placeholder="Please enter name as Khmer"
                         />
                     </UFormGroup>
@@ -85,30 +96,7 @@
             <div 
                 class="w-full border rounded-xl shadow p-4 flex flex-row flex-wrap justify-evenly items-stretch gap-x-2 gap-y-2">
                 <UFormGroup
-                    name=""
-                    label="Menu-type"
-                    :ui="{
-                        label:{
-                            base: 'text-orange-500 dark:text-orange-500'
-                        }
-                    }"
-                    class="flex-1">
-                    <SelectMenu
-                        name=""
-                        size="sm"
-                        option-attribute="label"
-                        value-attribute="value"
-                        placeholder="Please select Menu-type"
-                        :options="[
-                            {
-                                label: 'Test1',
-                                value: 'test1'
-                            }
-                        ]"
-                    />
-                </UFormGroup>
-                <UFormGroup
-                    name=""
+                    name="category"
                     label="Category"
                     :ui="{
                         label:{
@@ -117,21 +105,22 @@
                     }"
                     class="flex-1">
                     <SelectMenu
-                        name=""
+                        name="category"
                         size="sm"
-                        option-attribute="label"
-                        value-attribute="value"
-                        placeholder="Please select Category"
                         :options="[
                             {
                                 label: 'Test1',
                                 value: 'test1'
                             }
                         ]"
+                        option-attribute="label"
+                        value-attribute="value"
+                        placeholder="Please select Category"
+                        v-model="_form.category"
                     />
                 </UFormGroup>
                 <UFormGroup
-                    name=""
+                    name="en_price"
                     label="Price ($)"
                     :ui="{
                         label:{
@@ -140,15 +129,16 @@
                     }">
                     <UInput
                         type="number"
-                        name=""
+                        name="en_price"
                         variant="outline"
                         color="white"
                         size="sm"
+                        v-model="_form.en_price"
                         placeholder="Please enter price as dollar"
                     />
                 </UFormGroup>
                 <UFormGroup
-                    name=""
+                    name="kh_price"
                     label="Price (៛)"
                     :ui="{
                         label:{
@@ -157,40 +147,17 @@
                     }">
                     <UInput
                         type="number"
-                        name=""
+                        name="kh_price"
                         variant="outline"
                         color="white"
                         size="sm"
+                        v-model="_form.kh_price"
                         placeholder="Please enter price as Rial"
-                    />
-                </UFormGroup>
-                <UFormGroup
-                    name=""
-                    label="Discount"
-                    :ui="{
-                        label:{
-                            base: 'text-orange-500 dark:text-orange-500'
-                        }
-                    }"
-                    
-                    class="flex-1">
-                    <SelectMenu
-                        name=""
-                        size="sm"
-                        option-attribute="label"
-                        value-attribute="value"
-                        placeholder="Please select discount"
-                        :options="[
-                            {
-                                label: 'Test1',
-                                value: 'test1'
-                            }
-                        ]"
                     />
                 </UFormGroup>
             </div>
             <UFormGroup
-                name=""
+                name="remark"
                 label="Remark"
                 :ui="{
                     label:{
@@ -198,10 +165,11 @@
                     }
                 }">
                 <UTextarea
-                    name=""
+                    name="remark"
                     size="sm"
                     variant="outline"
                     color="white"
+                    v-model="_form.remark"
                     placeholder="Please enter remarks"
                     :rows="3"
                 />
@@ -236,29 +204,47 @@ import {
     ChooseImage,
     SelectMenu
 } from '@/components/ui';
+import { useAPI } from '@/composables/useApi';
 import type { 
-    Items 
+    Items, 
+    ResponseStatus
 } from '@/models/type';
 import { Delete } from '@/utils/dialog';
 
-const ingredientData: Ref<Items[]> =ref<Items[]>([
-    {
-        in_image: '',
-        name_en: '',
-        name_kh:'',
-        price_dol: 0,
-        price_khr:0,
-        stock_status: '',
-        remark: ''
-    }
-]);
+interface iMenuList {
+    pro_code: string,
+    image: string,
+    name_en: string,
+    name_kh: string,
+    kh_price: string | number,
+    en_price: string | number,
+    category: string,
+    remark: string
+}
+
+const _form: Ref<iMenuList> = ref<iMenuList>({
+    pro_code: '',
+    image: '',
+    name_en: '',
+    name_kh: '',
+    kh_price: 0,
+    en_price: 0,
+    category: '',
+    remark: ''
+})
+
+const {
+    fetchApi,
+    postApi,
+    isLoading
+} = useAPI();
 
 const props = withDefaults(defineProps<{
     listId: number | null,
     title: string,
 }>(), {
     typeId: null,
-    title: 'Create Gift List',
+    title: 'Create Menu List',
 });
 
 const emits = defineEmits<{
@@ -266,41 +252,52 @@ const emits = defineEmits<{
     (event: 'update:data'): void;
 }>();
 
-const items = [
-    { 
-        slot: 'list', 
-        label: 'List' 
-    },
-    { 
-        slot: 'ingredient', 
-        label: 'Ingredient' 
-    }
-];
-
-const addIngredient = (): void => {
-    ingredientData.value.push({
-        in_image: '',
-        name_en: '',
-        name_kh:'',
-        price_dol: 0,
-        price_khr:0,
-        stock_status: '',
-        remark: ''
-    })
-};
-
-const deleteIngredient = (index: number): void => {
-    Delete(
-        "Are you sure?",            
-        "This action cannot be undone.",  
-        "Action Confirmed",        
-        "Action Canceled",         
-        "Your item has been deleted successfully.", 
-        "The deletion was canceled.", 
-        ():void => {
-           ingredientData.value.splice(index, 1)
+const submitMenuList = async(): Promise<void> => {
+    console.log('Submitting form data:', unref(_form));  
+    let result: ResponseStatus = {} as ResponseStatus;
+    if (props.listId) {
+        let url: string = `menuList`;
+        result = await postApi('PUT', url, unref(_form)) as ResponseStatus;
+    } else {
+        let url: string = 'menuList';
+        result = await postApi('POST', url, unref(_form)) as ResponseStatus;
+        if(!result.error) {
+            clearForm();
+            emits('toggle', 'create menulist', false);
+            emits('update:data');
         }
-    );
+    }
 };
+
+const setData = async (): Promise<void> => {
+    let url: string = `menuList`;
+    const result: ResponseStatus = await fetchApi('GET', url) as ResponseStatus;
+    if(!result.error)
+    {
+        _form.value = result.data as iMenuList;
+    }
+}
+
+watch((): number | null => props?.listId, async (value: number | null): Promise<void> => {
+    if(value)
+    {
+        await setData();
+    }
+},{
+    immediate: true
+})
+
+const clearForm = (): void => {
+    _form.value = {
+        pro_code: '',
+        image: '',
+        name_en: '',
+        name_kh: '',
+        kh_price: '',
+        en_price: '',
+        category: '',
+        remark: ''
+    }
+}
 
 </script>

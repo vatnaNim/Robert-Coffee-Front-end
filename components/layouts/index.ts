@@ -5,6 +5,9 @@ import SectionList from "./section-bar.vue";
 import DisableMenu from "./disable-menu.vue";
 import UserList from "./user-list.vue";
 import PosCard from "./pos-card.vue";
+import GeneralSetting from "./general-setting.vue";
+import Profile from "./profile.vue";
+import UsersAccount from "./users-account.vue";
 
 export {
     NavBar,
@@ -12,5 +15,8 @@ export {
     SectionList,
     DisableMenu,
     UserList,
-    PosCard
+    PosCard,
+    GeneralSetting,
+    Profile,
+    UsersAccount
 }
