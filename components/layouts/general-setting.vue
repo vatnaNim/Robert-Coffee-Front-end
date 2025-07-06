@@ -1,73 +1,61 @@
 <template>
     <div
-        class="space-y-5">
+        class="space-y-5 w-full">
         <h1
             class="text-lg font-semibold text-orange-500 dark:text-orange-500 uppercase">
             Profile
         </h1>
-        <article
-            class="flex flex-col items-center justify-center gap-y-3">
+        <div 
+            class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-lg">
             <div 
-                class="w-24 h-24 rounded-full overflow-hidden border border-orange-500 dark:border-orange-500 shadow-md">
-                <img 
-                    :src="User" 
-                    alt=""
-                    class="w-full h-full object-scale-down"
-                />
+                class="flex items-center space-x-4 mb-6">
+                <div 
+                    class="w-20 h-20 rounded-full overflow-hidden border-4 border-orange-500 shadow">
+                    <img 
+                        :src="userImage || User" 
+                        alt="Profile" 
+                        class="w-full h-full object-fill" 
+                    />
+                </div>
+                <div>
+                    <h2 
+                        class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                        {{ username || 'Unknown User' }}
+                    </h2>
+                    <p 
+                        class="text-sm text-gray-500 dark:text-gray-400">
+                        User ID: {{ userId || '-' }}
+                    </p>
+                </div>
             </div>
-            <h2
-                class="text-xl uppercase font-medium text-orange-500 dark:text-orange-500">
-                Nim vatna
-            </h2>
             <div
-                class="w-full flex flex-col items-start gap-y-0.5 text-gray-600">
-                <article
-                    class="text-sm">
-                    <span
-                        class="capitalize font-semibold text-orange-500 dark:text-orange-500">
-                        role:
-                    </span>
-                    <span
-                        class="capitalize font-medium">
-                        Admin
-                    </span>
-                </article>
-                <article
-                    class="text-sm">
-                    <span
-                        class="capitalize font-semibold text-orange-500 dark:text-orange-500">
-                        gmail:
-                    </span>
-                    <span
-                        class=" text-sky-500 dark:text-sky-600 underline">
-                        vatnagz@gmail.com
-                    </span>
-                </article>
-                <article
-                    class="text-sm">
-                    <span
-                        class="capitalize font-semibold text-orange-500 dark:text-orange-500">
-                        created at:
-                    </span>
-                    <span
-                        class=" capitalize font-medium">
-                        08:00am
-                    </span>
-                </article>
-                <article
-                    class="text-sm">
-                    <span
-                        class="capitalize font-semibold text-orange-500 dark:text-orange-500">
-                        updated at:
-                    </span>
-                    <span
-                        class=" capitalize font-medium">
-                        08:00am
-                    </span>
-                </article>
+                class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-800 dark:text-gray-100">
+                <div>
+                    <span class="font-semibold text-orange-500">Email:</span>
+                    <span class="block text-sky-600 dark:text-sky-400 underline ">{{ email }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-orange-500">Role:</span>
+                    <span class="block capitalize text-gray-500 dark:text-gray-300">{{ role }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-orange-500">Gender:</span>
+                    <span class="block capitalize text-gray-500 dark:text-gray-300">{{ gender }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-orange-500">Phone Number:</span>
+                    <span class="block text-gray-500 dark:text-gray-300">{{ phoneNumber }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-orange-500">Account Status:</span>
+                    <span :class="{
+                        'text-green-500': acc_status === 'active',
+                        'text-yellow-500': acc_status === 'pending',
+                        'text-red-500': acc_status === 'banned'
+                    }" class="block capitalize font-semibold">{{ acc_status }}</span>
+                </div>
             </div>
-        </article>
-
+        </div>
         <h1
             class="text-lg font-semibold text-orange-500 dark:text-orange-500 uppercase">
             Preferences
@@ -236,6 +224,9 @@ import {
     type Router,
     useRouter
 } from "vue-router";
+import {
+    storeToRefs
+} from 'pinia';
 
 const authStore = useAuthStore();
 const router: Router = useRouter();
@@ -256,6 +247,18 @@ const {
     isReceiptPrintingEnabled,
     toggleReceiptPrinting,
 } = useReceiptPrinting();
+
+const { 
+    username, 
+    userImage, 
+    role, 
+    email,
+    phoneNumber,
+    gender,
+    userId,
+    acc_status,
+    created_at,
+} = storeToRefs(authStore);
 const selectedTime: Ref<string> = ref<string>('1h');
 
 const toggleChangeDrawer = (val: boolean): void => {

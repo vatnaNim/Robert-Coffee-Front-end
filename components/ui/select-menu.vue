@@ -13,7 +13,8 @@
                 }
             }"
             :loading="($attrs.loading as boolean)"
-            v-model="selected"/>
+            v-model="selected"
+            :required="required"/>
         <LazyUButton
             v-if="selected"
             type="button"
@@ -39,8 +40,10 @@ defineOptions({
 
 const props = withDefaults(defineProps<{
     modelValue?: any;
+    required?: boolean;
 }>(),{
-    modelValue: null
+    modelValue: null,
+    required: false
 });
 
 /**

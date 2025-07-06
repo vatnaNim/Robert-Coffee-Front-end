@@ -2,7 +2,7 @@
     <div 
         class="w-full h-[100vh] flex justify-center items-center relative">
         <form   
-            @submit.prevent="login"
+            @submit.prevent="loginAcc"
             class="flex flex-col gap-2.5 bg-white p-10 rounded-2xl transition-all duration-400 ease-in-out shadow-md hover:-translate-x-2 hover:-translate-y-2 hover:border hover:border-gray-900 hover:shadow-[10px_10px_0px_#666666]">
             <p 
                 class="text-black pb-8 text-center font-bold">
@@ -12,7 +12,7 @@
                 class="rounded-md border border-gray-200 bg-gray-200 outline-none p-2 transition-all duration-400 ease-in-out hover:shadow-[6px_6px_0px_#969696,-3px_-3px_10px_#ffffff] focus:bg-white focus:shadow-inner focus:shadow-gray-500 text-black"
                 placeholder="Username"
                 type="text"
-                v-model="name" 
+                v-model="login" 
             />
             <div class="relative">
                 <input
@@ -80,7 +80,7 @@ useSeoMeta({
 });
 
 const authStore = useAuthStore();
-const name: Ref<string> = ref<string>('');
+const login: Ref<string> = ref<string>('');
 const password: Ref<string> = ref<string>('');
 const errorMessage: Ref<string> = ref<string>('');
 const router = useRouter();
@@ -92,7 +92,7 @@ const closeNotification = (): void => {
 };
 
 
-const login = async (): Promise<void> => {
+const loginAcc = async (): Promise<void> => {
   try {
     const response = await fetch(`${useRuntimeConfig().public.NUXT_PUBLIC_API_URL}/login`, {
         method: 'POST',
@@ -100,7 +100,7 @@ const login = async (): Promise<void> => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            name: name.value,
+            login: login.value,
             password: password.value,
         }),
     });
@@ -112,7 +112,20 @@ const login = async (): Promise<void> => {
     }
 
     Alert(data.message || "Login successful!!!", () => {
-        authStore.login(data.token, data.expiresIn, name.value, data.user.role, data.user.image);
+        authStore.login(
+            data.token, 
+            data.expiresIn, 
+            login.value, 
+            data.user.role, 
+            data.user.email,
+            data.user.image, 
+            data.user.gender,
+            data.user.userId,
+            data.user.phoneNumber,
+            data.user.acc_status,
+            data.user.user_status,
+            data.user.created_at,
+        );
         router.push('/');
     });
 

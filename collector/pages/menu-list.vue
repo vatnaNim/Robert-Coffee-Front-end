@@ -57,6 +57,13 @@
                             size="sm"
                             v-model="_form.pro_code"
                             placeholder="Please enter list code "
+                            disabled
+                            :loading="isLoading"
+                            :ui="{
+                               icon: {
+                                    loading: 'eos-icons:loading'
+                               }
+                            }"
                         />
                     </UFormGroup>
                     <UFormGroup
@@ -73,6 +80,9 @@
                             size="sm"
                             v-model="_form.name_en"
                             placeholder="Please enter name as English"
+                            pattern="^[A-Za-z\s]+$"
+                            title="Please enter letters and spaces only."
+                            required
                         />
                     </UFormGroup>
                     <UFormGroup
@@ -117,6 +127,7 @@
                         value-attribute="value"
                         placeholder="Please select Category"
                         v-model="_form.category"
+                        required
                     />
                 </UFormGroup>
                 <UFormGroup
@@ -135,6 +146,7 @@
                         size="sm"
                         v-model="_form.en_price"
                         placeholder="Please enter price as dollar"
+                        required
                     />
                 </UFormGroup>
                 <UFormGroup
@@ -175,7 +187,6 @@
                 />
             </UFormGroup>
         </div>
-
         <div 
             class="flex justify-end gap-2">
             <UButton
@@ -193,6 +204,12 @@
                 label="Save"
                 color="orange"
                 class="px-8"
+                :loading="isLoading"
+                :ui="{
+                    icon: {
+                        loading: 'eos-icons:loading'
+                    }
+                }"
             />        
         </div>
     </form>
@@ -200,96 +217,115 @@
 
 <script setup lang="ts">
 import { 
-    BackBtn,
-    ChooseImage,
-    SelectMenu
+    BackBtn, 
+    ChooseImage, 
+    SelectMenu 
 } from '@/components/ui';
-import { useAPI } from '@/composables/useApi';
+import { 
+    useAPI 
+} from '@/composables/useApi';
 import type { 
-    Items, 
-    ResponseStatus
+    ResponseStatus 
 } from '@/models/type';
-import { Delete } from '@/utils/dialog';
+import { 
+    useIdGenerator 
+} from '@/composables/useIdGenerator';
 
 interface iMenuList {
-    pro_code: string,
-    image: string,
-    name_en: string,
-    name_kh: string,
-    kh_price: string | number,
-    en_price: string | number,
-    category: string,
-    remark: string
+    pro_code: string;
+    image: string;
+    name_en: string;
+    name_kh: string;
+    kh_price: number | string;
+    en_price: number | string;
+    category: string;
+    remark: string;
 }
 
-const _form: Ref<iMenuList> = ref<iMenuList>({
+const _form = ref<iMenuList>({
     pro_code: '',
     image: '',
     name_en: '',
     name_kh: '',
-    kh_price: 0,
-    en_price: 0,
+    kh_price: '',
+    en_price: '',
     category: '',
     remark: ''
-})
+});
 
-const {
-    fetchApi,
-    postApi,
-    isLoading
-} = useAPI();
+const { fetchApi, postApi, isLoading } = useAPI();
+const { generateId, initializeFromExistingId } = useIdGenerator(1, 'D', 3);
 
-const props = withDefaults(defineProps<{
-    listId: number | null,
-    title: string,
-}>(), {
-    typeId: null,
-    title: 'Create Menu List',
+const props = withDefaults(defineProps<{ listId: number | null; title: string }>(), {
+  listId: null,
+  title: 'Create Menu List'
 });
 
 const emits = defineEmits<{
-    (event: 'toggle', title: string ,state: boolean): void;
-    (event: 'update:data'): void;
+    (e: 'toggle', title: string, state: boolean): void;
+    (e: 'update:data'): void;
 }>();
 
-const submitMenuList = async(): Promise<void> => {
-    console.log('Submitting form data:', unref(_form));  
-    let result: ResponseStatus = {} as ResponseStatus;
-    if (props.listId) {
-        let url: string = `menuList`;
-        result = await postApi('PUT', url, unref(_form)) as ResponseStatus;
+const initializeId = async (): Promise<void> => {
+    let url: string = 'menuList/last-id';
+    const result = (await fetchApi('GET', url)) as any;
+
+    if (!result.error && result.data?.pro_code) 
+    {
+        initializeFromExistingId(result.data.pro_code); 
+        _form.value.pro_code = generateId();
     } else {
-        let url: string = 'menuList';
-        result = await postApi('POST', url, unref(_form)) as ResponseStatus;
-        if(!result.error) {
-            clearForm();
-            emits('toggle', 'create menulist', false);
-            emits('update:data');
-        }
+        _form.value.pro_code = generateId();
+    }
+};
+
+
+const submitMenuList = async (): Promise<void> => {
+    let url: string = props.listId ? `menuList/${props.listId}` : 'menuList';
+    const method: string = props.listId ? 'PUT' : 'POST';
+    const result = await postApi(method, url, _form.value) as ResponseStatus;
+
+    if (!result.error) 
+    {
+        clearForm();
+        emits('toggle', 'create menulist', false);
+        emits('update:data');
     }
 };
 
 const setData = async (): Promise<void> => {
-    let url: string = `menuList`;
-    const result: ResponseStatus = await fetchApi('GET', url) as ResponseStatus;
-    if(!result.error)
-    {
-        _form.value = result.data as iMenuList;
-    }
-}
 
-watch((): number | null => props?.listId, async (value: number | null): Promise<void> => {
-    if(value)
-    {
-        await setData();
-    }
-},{
-    immediate: true
-})
+    if (!props.listId) return;
+    const result = (await fetchApi('GET', `menuList/${props.listId}`)) as any;
 
-const clearForm = (): void => {
+    if (!result.error && result.data) 
+    {
+        const d = result.data;
+        _form.value = {
+            pro_code: d.pro_code,
+            image: d.image,
+            name_en: d.name_en,
+            name_kh: d.name_kh,
+            kh_price: d.price?.kh_price ? Number(d.price.kh_price) : '',
+            en_price: d.price?.en_price ? Number(d.price.en_price) : '',
+            category: d.category,
+            remark: d.remark
+        };
+        initializeFromExistingId(d.pro_code);
+    }
+};
+
+watch(() => props.listId, async(id: number | null): Promise<void> => {
+    if (id) {
+        await setData()
+    } else {
+        await initializeId()
+    }
+}, { immediate: true });
+
+const clearForm = async (): Promise<void> => {
     _form.value = {
-        pro_code: '',
+        pro_code: generateId(),
         image: '',
         name_en: '',
         name_kh: '',
@@ -297,7 +333,6 @@ const clearForm = (): void => {
         en_price: '',
         category: '',
         remark: ''
-    }
-}
-
+    };
+};
 </script>

@@ -13,7 +13,7 @@
         <div
             class="flex gap-x-2 py-1.5 px-2 rounded-md items-center duration-300 group">
             <UAvatar
-                src=""
+                :src="userImage"
                 alt="user"
                 size="sm"
             />
@@ -73,8 +73,8 @@ const items: Ref<DropdownItem[][]> = computed(() => [
     {
         label: role.value,
         icon: 'ic:baseline-person-pin',
-        iconClass: "text-gray-600 dark:text-white",
-        class: 'text-green-500 uppercase font-bold text-gray-600 dark:text-white',
+        iconClass: "text-orange-600 dark:text-orange-600",
+        class: 'text-orange-500 dark:text-orange-600 uppercase font-bold text-gray-600 dark:text-white',
         disabled: true
     },
     {

@@ -180,7 +180,7 @@
                         </template>
                         <template #action-data="{ row }">
                             <UDropdown 
-                                :items="actionItem" 
+                                :items="actionItem(row)" 
                                 :popper="{ placement: 'bottom-start' }"
                                 :ui="{
                                     background: 'bg-white/20 dark:bg-black/30 backdrop-blur-sm dark:backdrop-blur-md border border-white/30 dark:border-black/30 shadow-lg'
@@ -217,10 +217,18 @@
                                 </span>
                                 <LazyUSelect
                                     v-model="pageCount"
-                                    :options="[5,10,15,20]"
+                                    :options="[5, 10, 15, 20]"
                                     class="me-2 w-20"
                                     size="xs"
-                                    color="amber"
+                                    color="white"
+                                    :ui="
+                                    {
+                                        color: {
+                                            white: {
+                                                outline: 'ring-orange-500 dark:ring-orange-500 focus:ring-orange-500 dark:focus:ring-orange-500'
+                                            }
+                                        }
+                                    }"
                                 />
                             </div>
                         </div>
@@ -232,6 +240,22 @@
                         />
                     </div>
                 </div>
+                <article>
+                    <MenuListStatus
+                        :open="statusModal"
+                        :menu-id="modalID"
+                        @toggle="toggleStatus"
+                        :ui="{
+                            base: 'backdrop-blur-sm border border-white/30',
+                            background: 'bg-white/30 dark:bg-black/30 ',
+                            rounded: 'rounded-2xl',
+                            shadow: 'shadow-lg'
+                        }"
+                        @update:data="async(): Promise<void> => {
+                            await fetchMenuList();
+                        }"
+                    />
+                </article>
             </div>
         </template>
     </div>
@@ -253,10 +277,21 @@ import type {
     Items, 
     ResponseStatus 
 } from '@/models/type';
+import { 
+    Delete 
+} from '@/utils/dialog';
+import { 
+    useAPI
+} from '@/composables/useApi';
+import { 
+    MenuListStatus 
+} from '@/collector/modals';
 
 definePageMeta({
     colorMode: 'light',
 });
+
+const {postApi} = useAPI();
 
 const columns = [
     { key: 'action', label: 'Action' },
@@ -272,18 +307,23 @@ const columns = [
     { key: 'updated_at', label: 'Updated At' },
 ];
 
-const actionItem = [
+const actionItem = (row: Items) => [
     [
         {
             label: 'Edit',
             icon: 'material-symbols:box-edit-outline',
-            onClick: async(): Promise<void>=>{
-                toggleModal( 'Edit' ,true)
-            } 
+            click: async (): Promise<void> => {
+                modalID.value = Number(row.id);
+                toggleModal('Edit', true);
+            },
         },
         {
             label: 'Modify Status',
             icon: 'i-heroicons-pencil-square-20-solid',
+            click: async ():Promise<void> => {
+                modalID.value = Number(row.id);
+                toggleStatus(true);
+            }
         }
     ],
     [
@@ -292,6 +332,22 @@ const actionItem = [
             icon: 'mdi:delete-empty-outline',
             iconClass: 'text-red-500 dark:text-red-400',
             class: 'text-red-500 dark:text-red-400',
+            click: async(): Promise<void> => {
+                Delete(
+                    'Are you sure?',              
+                    'You won’t be able to revert this!', 
+                    'Deleted!',                     
+                    'Cancelled',                    
+                    'The item has been deleted.',  
+                    'The item is safe :)', async (): Promise<void> => {
+                    let url: string = `menuList/${row.id}`;
+                    await postApi('DELETE', url).then(async (res: any): Promise<void> => {
+                        if(!res.error){
+                            await fetchMenuList()
+                        }
+                    })
+                })
+            }
         }
     ]
 ]
@@ -308,6 +364,7 @@ const menuDb: Ref<Items[]> = ref<Items[]>([]);
 const modalID: Ref<number | null> = ref<number | null>(null);
 const selectedColumns = ref([...columns]);
 const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
+const statusModal: Ref<boolean> = ref<boolean>(false);
 // page
 const page:Ref<number> = ref<number>(1);
 const pageCount: Ref<number | string> = ref<number | string>(10); 
@@ -357,6 +414,11 @@ const toggleModal = (title: string, state: boolean): void => {
     openModal.value = state;
     ModalTitle.value = title;
 };
+
+const toggleStatus = (state: boolean): void => {
+    statusModal.value = state;
+};
+
 
 const toggleFilter = (): void => {
     showFilter.value = !showFilter.value;

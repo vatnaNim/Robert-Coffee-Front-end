@@ -50,8 +50,14 @@ export function useAPI(){
             didOpen: (toast) => {
               toast.onmouseenter = Swal.stopTimer;
               toast.onmouseleave = Swal.resumeTimer;
-            }
-          });
+            },
+            customClass: {
+                popup: 'liquid-glass-popup',
+                title: 'dark:text-gray-300 text-gray-600',
+                timerProgressBar: 'bg-orange-600 dark:bg-orange-500'
+            },
+            background: 'transparent'
+        });
 
           return result;
         }
@@ -64,6 +70,13 @@ export function useAPI(){
             showConfirmButton: false,
             timer: 2500,
             timerProgressBar: true,
+            customClass: {
+                popup: 'liquid-glass-popup',
+                title: 'dark:text-gray-300 text-gray-600',
+                timerProgressBar: 'bg-orange-500 dark:bg-orange-500'
+
+            },
+            background: 'transparent',
             didOpen: (toast) => {
               toast.onmouseenter = Swal.stopTimer;
               toast.onmouseleave = Swal.resumeTimer;

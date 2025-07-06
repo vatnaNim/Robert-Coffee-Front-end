@@ -9,13 +9,17 @@
             loading="lazy"/>
         <div
             v-else
-            class="flex items-center justify-center w-full h-full cursor-pointer"
-            @click="(): void => {
-                handleChooseImage();
-            }">
+            class="flex flex-col items-center justify-center w-full h-full cursor-pointer group"
+            @click="handleChooseImage"
+            @mouseenter="hover = true"
+            @mouseleave="hover = false">
             <LazyUIcon
-                name="material-symbols:imagesmode-outline"
-                class="text-gray-500 text-4xl"/>
+                :name="hover ? 'material-symbols:image-search-outline' : 'material-symbols:add-photo-alternate-outline'"
+                class="text-gray-500 text-4xl transition-colors group-hover:text-orange-500  duration-300"
+            />
+            <span class="mt-2 text-gray-500 group-hover:text-orange-500 text-sm select-none text-center">
+                Click to upload image
+            </span>
         </div>
         <LazyUButton
             v-if="image"
@@ -43,6 +47,8 @@ const props = withDefaults(defineProps<{
 /**
  * Begin::Set event trigger to parent component
  */
+
+const hover = ref(false);
 const emits = defineEmits<{
     (event: 'update:model-value', value: string): void;
 }>();

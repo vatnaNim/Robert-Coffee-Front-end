@@ -20,6 +20,8 @@ import PurchaseHistory from "./purchase-history.vue";
 import Setting from "./setting.vue";
 import History from "./history.vue";
 import MenuListIcon from "./menuList-icon.vue";
+import Back from "./back.vue";
+import AllUser from "./all-user.vue";
 
 export { 
     ArrowBack,
@@ -43,5 +45,7 @@ export {
     PurchaseHistory,
     Setting,
     History,
-    MenuListIcon
+    MenuListIcon,
+    Back,
+    AllUser
 };
