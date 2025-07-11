@@ -291,7 +291,6 @@ definePageMeta({
     colorMode: 'light',
 });
 
-const {postApi} = useAPI();
 
 const columns = [
     { key: 'action', label: 'Action' },
@@ -354,7 +353,10 @@ const actionItem = (row: Items) => [
 /* 
     Start:Declare varrible
 */
-const { fetchApi } = useAPI();
+const { 
+    fetchApi, 
+    postApi 
+} = useAPI();
 
 const searchValue: Ref<string> = ref<string>('');
 const openModal: Ref<boolean> = ref<boolean>(false);

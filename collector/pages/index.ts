@@ -5,6 +5,7 @@ import AcccessoryGift from "./acccessory-gift.vue";
 import PurchasePage from "./purchase-page.vue";
 import PosProchasing from "./pos_prochasing.vue";
 import UsersList from "./users-list.vue";
+import ViewMembership from "./view-membership.vue";
 
 export {
     MenuCategory,
@@ -13,5 +14,6 @@ export {
     AcccessoryGift,
     PurchasePage,
     PosProchasing,
-    UsersList
+    UsersList,
+    ViewMembership
 };

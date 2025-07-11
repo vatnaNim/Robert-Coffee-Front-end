@@ -1,74 +1,172 @@
 <template>
     <div 
-        class="w-full h-[100vh] flex justify-center items-center relative">
-        <form   
-            @submit.prevent="loginAcc"
-            class="flex flex-col gap-2.5 bg-white p-10 rounded-2xl transition-all duration-400 ease-in-out shadow-md hover:-translate-x-2 hover:-translate-y-2 hover:border hover:border-gray-900 hover:shadow-[10px_10px_0px_#666666]">
-            <p 
-                class="text-black pb-8 text-center font-bold">
-                Login 
-            </p>
-            <input
-                class="rounded-md border border-gray-200 bg-gray-200 outline-none p-2 transition-all duration-400 ease-in-out hover:shadow-[6px_6px_0px_#969696,-3px_-3px_10px_#ffffff] focus:bg-white focus:shadow-inner focus:shadow-gray-500 text-black"
-                placeholder="Username"
-                type="text"
-                v-model="login" 
-            />
-            <div class="relative">
-                <input
-                    class="w-full rounded-md border border-gray-200 bg-gray-200 outline-none p-2 pr-10 transition-all duration-400 ease-in-out hover:shadow-[6px_6px_0px_#969696,-3px_-3px_10px_#ffffff] focus:bg-white focus:shadow-inner focus:shadow-gray-500 text-black"
-                    :type="showPassword ? 'text' : 'password'"
-                    placeholder="Password"
-                    v-model="password"
+        class="w-full h-[100vh] flex justify-center items-center relative bg-white dark:bg-gray-900">
+        <article
+            class="max-w-full w-[900px] flex gap-x-2 rounded-xl shadow-md border border-orange-400 dark:border-orange-500 overflow-hidden">
+            <div class="w-[50%]">
+                <img 
+                    :src="LoginCover" 
+                    alt="cover"
+                    class="w-full h-full object-fill"    
                 />
-                <button 
-                    type="button"
-                    class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-600 hover:text-gray-900"
-                    @click="showPassword = !showPassword">
-                    <UIcon
-                        name="clarity:eye-show-line"
-                        class="w-5 h-5"
-                        v-if="showPassword"
-                    />
-                    <UIcon
-                        name="fluent:eye-hide-20-regular"
-                        class="w-5 h-5"
-                        v-else
-                    />
-                </button>
             </div>
-            <button
-                type="submit"
-                class="mt-8 self-center px-4 py-3 rounded-lg border-none text-black transition-all duration-400 ease-in-out shadow-md hover:shadow-[6px_6px_0px_#969696,-3px_-3px_10px_#ffffff] hover:-translate-x-2 hover:-translate-y-2 active:transition-all active:duration-200 active:translate-x-0 active:translate-y-0 active:shadow-none">
-                Submit
-            </button>
-        </form>
+            <form
+                name="signin"
+                method="post"
+                enctype="multipart/form-data"
+                @submit.prevent="async ():Promise<void>=> {
+                    await loginAcc();
+                }"
+                class="w-[50%] flex flex-col justify-center items-center">
+                <div 
+                    class="flex flex-col gap-y-2 justify-center items-center">
+                    <img 
+                        :src="MainLogo" 
+                        alt="logo"
+                        class="w-20 h-20 object-fill rounded-full"
+                    />
+                    <h1
+                        class="text-xl font-semibold uppercase dark:text-gray-300 text-gray-600">
+                        sign In
+                    </h1>
+                    <div 
+                        class="space-y-2">
+                        <LazyUFormGroup
+                            name=""
+                            label="Username or Email"
+                            :ui="{
+                                label: {
+                                    base: 'text-orange-500 dark:text-orange-500'
+                                }
+                            }"
+                            class="w-[350px]"
+                            required>
+                            <LazyUInput
+                                name=""
+                                type="text"
+                                size="sm"
+                                color="amber"
+                                v-model="login"
+                                placeholder="Enter Username or Email"
+                                required
+                            />
+                        </LazyUFormGroup>
+                        <LazyUFormGroup
+                            name=""
+                            label="Password"
+                            :ui="{
+                                label: {
+                                    base: 'text-orange-500 dark:text-orange-500'
+                                }
+                            }"
+                            class="w-[350px]"
+                            required>
+                            <LazyUInput
+                                :type="showPassword ? 'text' : 'password'"
+                                name="password"
+                                size="sm"
+                                v-model="password"
+                                placeholder="Please Enter Password"
+                                :maxLength="10"
+                                padded>
+                                <template #trailing>
+                                    <div 
+                                        class="flex items-center gap-x-2">
+                                        <span class="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                                            {{ password.toString().length }}/{{ 10 }}
+                                        </span>
+                                        <LazyUButton
+                                            variant="link"
+                                            color="gray"
+                                            @click="togglePassword"
+                                            class="p-0 hover:text-orange-500 z-10 relative">
+                                            <UIcon
+                                                :name="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
+                                                class="w-5 h-5 pointer-events-auto"
+                                            />
+                                        </LazyUButton>
+                                    </div>
+                                </template>
+                            </LazyUInput>
+                        </LazyUFormGroup>
+                    </div>
+                    <div 
+                        class="w-full pt-2">
+                        <LazyUButton
+                            type="submit"
+                            size="md"  
+                            :label="isLoading ? 'Logging in...' : 'Log In'"
+                            :loading="isLoading"
+                            :disabled="isLoading"
+                            variant="solid"
+                            color="amber"
+                            block
+                            :ui="{
+                                icon: {
+                                    loading: 'line-md:loading-loop'
+                                }
+                            }"
+                        />
+                    </div>
+                </div>
+            </form>
+        </article>
         <div 
-            v-if="showNotification" 
-            class="absolute top-5 right-5 w-64 bg-white shadow-lg rounded-lg px-3 py-2 border border-gray-200">
-            <div 
-                class="flex justify-between items-center">
-            <p 
-                class="text-sm text-gray-600 font-semibold">{{ errorMessage }}</p>
-                <UButton
-                    icon="carbon:close"
-                    color="red"
+            class="absolute top-2 right-2">
+            <UTooltip 
+                :text="darkColor? 'Darkmode' : 'Lightmode'" 
+                :popper="{ arrow: true }">
+                <LazyUButton
                     variant="link"
-                    @click="closeNotification"
-                    class="font-bold"
-                />
-            </div>
+                    size="md"
+                    color="amber"
+                    @click="toggleDarkMode">
+                    <LazyUIcon
+                        :name="darkColor
+                            ? 'material-symbols:light-mode-outline'
+                            : 'material-symbols:dark-mode-outline'"
+                        class="w-6 h-6"
+                    />
+                </LazyUButton>
+            </UTooltip>
+            <UTooltip 
+                :text="isFullscreen ? 'ExitScreen' : 'FullScreen'" 
+                :popper="{ arrow: true }">
+                <LazyUButton
+                    variant="link"
+                    size="md"
+                    color="amber"
+                    @click="toggleFullscreen">
+                    <LazyUIcon
+                        :name="isFullscreen ? 'ant-design:fullscreen-exit-outlined' : 'gridicons:fullscreen'"
+                        class="w-6 h-6"
+                    />
+                </LazyUButton>
+            </UTooltip>
         </div>
-    </div>  
+    </div>
 </template>
 
 <script lang="ts" setup>
+import { 
+    LoginCover,
+    MainLogo
+} from '@/assets/images';
 import { 
     useAuthStore 
 } from '@/stores/auth';
 import { 
     Alert 
 } from '@/utils/dialog';
+import type { 
+    Router 
+} from 'vue-router';
+import { 
+    useDarkMode 
+} from '@/composables/useDarkMode';
+import { 
+    useFullscreen 
+} from '@/composables/useFullScreen';
 
 definePageMeta({
 	colorMode: 'light',
@@ -80,19 +178,23 @@ useSeoMeta({
 });
 
 const authStore = useAuthStore();
+const { isFullscreen, toggleFullscreen } = useFullscreen();
+const { darkColor, toggle: toggleDarkMode } = useDarkMode();
+
 const login: Ref<string> = ref<string>('');
 const password: Ref<string> = ref<string>('');
-const errorMessage: Ref<string> = ref<string>('');
-const router = useRouter();
+const router: Router = useRouter();
 const showPassword: Ref<boolean> = ref<boolean>(false);
 const showNotification: Ref<boolean> = ref<boolean>(false); 
+const isLoading: Ref<boolean> = ref<boolean>(false);
 
-const closeNotification = (): void => {
-  showNotification.value = false;
+
+const togglePassword = () => {
+    showPassword.value = !showPassword.value
 };
 
-
 const loginAcc = async (): Promise<void> => {
+    isLoading.value = true;
   try {
     const response = await fetch(`${useRuntimeConfig().public.NUXT_PUBLIC_API_URL}/login`, {
         method: 'POST',
@@ -130,11 +232,12 @@ const loginAcc = async (): Promise<void> => {
     });
 
     } catch (error) {
-        errorMessage.value = (error as Error).message || 'Login failed';
-        showNotification.value = true; 
+        Alert((error as Error).message || 'Login failed', () => {}, 'error');
         setTimeout(() => {
         showNotification.value = false;
-        }, 5000);
+        }, 3000);
+    } finally {
+        isLoading.value = false;
     }
 };
 

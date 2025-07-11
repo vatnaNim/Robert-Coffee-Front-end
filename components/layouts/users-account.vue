@@ -76,7 +76,11 @@
                         :rows="userDb"
                         :ui="{ 
                             divide: 'divide-orange-400',
-                            th: { base: 'text-orange-400 text-nowrap uppercase text-sm ' },
+                            th: { base: 'text-orange-400 text-nowrap uppercase text-sm ' },      
+                            td: {
+                                padding: 'py-1',
+                                base: 'border-b border-gray-300 dark:border-gray-600'
+                            }                    
                         }">
                         <template #image-data="{ row }">
                             <TooltipImage
@@ -89,10 +93,40 @@
                                 :containerHeight="150"
                             />
                         </template>
+                        <template #userId-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500': ''">
+                                {{ row.userId }}
+                            </span>
+                        </template>
+                        <template #name-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.name }}
+                            </span>
+                        </template>
+                        <template #gender-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.gender }}
+                            </span>
+                        </template>
+                        <template #role-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.role }}
+                            </span>
+                        </template>
                         <template #email-data="{row}">
                             <span
-                                class="text-blue-400 dark:text-blue-400 underline underline-offset-2 ">
+                                :class="row.index? 'text-green-600 dark:text-green-500 underline underline-offset-2 ': 'text-blue-400 dark:text-blue-400 underline underline-offset-2'">
                                 {{ row.email }}
+                            </span>
+                        </template>
+                         <template #phoneNumber-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.phoneNumber }}
                             </span>
                         </template>
                         <template #acc_status-data="{ row }">
@@ -100,8 +134,25 @@
                                 :label="row.acc_status"
                                 size="sm"
                                 :color="row.acc_status === 'active' ? 'green' : row.acc_status === 'pending' ? 'yellow' : 'red'"
-                                variant="solid"
+                                variant="subtle"
+                                :ui="{
+                                    variant: {
+                                        subtle: 'ring-inset ring-gray-300 dark:ring-gray-600'
+                                    }
+                                }"
                             />
+                        </template>
+                        <template #created_at-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.created_at }}
+                            </span>
+                        </template>
+                        <template #updated_at-data="{ row }">
+                            <span
+                                :class="row.index? 'text-green-600 dark:text-green-500 capitalize': 'capitalize'">
+                                {{ row.updated_at }}
+                            </span>
                         </template>
                         <template #action-data="{ row }">
                             <UDropdown 
@@ -165,14 +216,35 @@
                         />
                     </div>
                 </div>
-                   
+                <article>
+                    <AccountStatus
+                        :user-id="usersId"
+                        :open="statusModal"
+                        :user-name="userName"
+                        @toggle="toggleStatus"
+                        @update:data="async(): Promise<void> => {
+                            await fetchUsers()
+                        }"
+                    />
+                    <ChangePassword
+                        :user-id="usersId"
+                        :open="changePWModal"
+                        :user-name="userName"
+                        @toggle="toggleChangePw"
+                        @update:data="async (): Promise<void> => {
+                            await fetchUsers()
+                        }"
+                    />
+                </article>
             </div>
         </template>
     </div>
 </template>
 
 <script setup lang="ts">
-import { UsersList } from '@/collector/pages';
+import { 
+    UsersList 
+} from '@/collector/pages';
 import type { 
     Items, 
     ResponseStatus 
@@ -183,6 +255,11 @@ import {
 import { 
     TooltipImage 
 } from '../ui';
+import { 
+    ChangePassword,
+    AccountStatus 
+} from '@/collector/modals';
+import { Delete } from '@/utils/dialog';
 
 const columns = [
     {
@@ -245,38 +322,51 @@ const actionItem = (row: Items) => [
             label: 'Change Status',
             icon: 'material-symbols:deployed-code-account-outline-rounded',
             click: async ():Promise<void> => {
-             
+                userName.value = String(row.name);
+                usersId.value = Number(row.id);
+                toggleStatus(true);
             }
         },
         {
             label: 'Change Password',
             icon: 'fluent:password-reset-48-regular',
             click: async ():Promise<void> => {
-             
+                userName.value = String(row.name);
+                usersId.value = Number(row.id);
+                toggleChangePw(true);
             }
         },
     ],
     [ 
-        {
-            label: 'Print as PDF',
-            icon: 'vscode-icons:file-type-pdf2',
-            click: async ():Promise<void> => {
-             
-            }
-        },
         {
             label: 'Remove User',
             icon: 'ic:baseline-person-remove',
             iconClass: 'text-red-500 dark:text-red-400',
             class: 'text-red-500 dark:text-red-400',
             click: async(): Promise<void> => {
-               
+                Delete(
+                    'Are you sure?',              
+                    'You won’t be able to revert this!', 
+                    'Deleted!',                     
+                    'Cancelled',                    
+                    `${row.name} has been deleted.`,  
+                    `${row.name} is safe :)`, async (): Promise<void> => {
+                    let url: string = `user/${row.id}`;
+                    await postApi('DELETE', url).then(async (res: any): Promise<void> => {
+                        if(!res.error){
+                            await fetchUsers();
+                        }
+                    })
+                })
             }
         }
     ]
 ];
 
-const {fetchApi} = useAPI();
+const {
+    fetchApi, 
+    postApi
+} = useAPI();
 
 const searchValue: Ref<string> = ref<string>('');
 const openPage: Ref<boolean> = ref<boolean>(false);
@@ -284,6 +374,9 @@ const pageTitle: Ref<string> = ref<string>('Create');
 const usersId: Ref<number | null> = ref<number | null>(null);
 const userDb: Ref<Items[]> = ref<Items[]>([]);
 const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
+const changePWModal: Ref<boolean> = ref<boolean>(false);
+const statusModal: Ref<boolean> = ref<boolean>(false);
+const userName: Ref<string> = ref<string>('No UserName!');
 
 const page:Ref<number> = ref<number>(1);
 const pageCount: Ref<number | string> = ref<number | string>(10); 
@@ -301,12 +394,22 @@ const togglePage =(title: string, state: boolean): void => {
     pageTitle.value = title;
 };
 
+const toggleChangePw = (state: boolean): void => {
+    changePWModal.value = state;
+}
+
+const toggleStatus = (state: boolean): void => {
+    statusModal.value = state;
+}
+
 const fetchUsers = async (query = ''): Promise<void> => {
-    let url: string = `users`;
-    const result = (await fetchApi('GET', url));
+    let url: string = `users?page=${page.value}&per_page=${pageCount.value}`;
+    if(query) url += `&search=${query}`
+    const result = (await fetchApi('GET', url)) as ResponseStatus;
     if(!result.error)
     {
-        userDb.value = result.users as Items[]
+        userDb.value = Array.isArray(result.data) ? result.data : [];
+        pageTotal.value = result.total_items || 0;
     }
 }
 
@@ -315,6 +418,7 @@ const searchData = async (value: string): Promise<void> => {
     if (timeout.value) clearTimeout(timeout.value);
 
     timeout.value = setTimeout(async () => {
+        page.value = 1;
         await fetchUsers(value);
     }, 300);
 };

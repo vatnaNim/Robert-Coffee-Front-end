@@ -3,10 +3,19 @@
         <template
             v-if="openModal">
             <Membership
-                :member-id="null"
+                :member-id="memberId"
                 :title="ModalTitle"
-                @update:data=""
                 @toggle="toggleModal"
+                @update:data="async (): Promise<void> => {
+                    await fetchMembership();
+                }"
+            />
+        </template>
+        <template 
+            v-else-if="viewMember">
+            <ViewMembership
+                :member-id="memberId"
+                @toggle="toggleViewMember"    
             />
         </template>
         <template v-else>
@@ -17,29 +26,44 @@
                     <PrimaryBtn
                         name="Create membership"
                         size="px-3 py-2 text-sm"
-                        @click="toggleModal('Create', true)"
+                        @click="async ():Promise<void> => {
+                            memberId = null;
+                            await toggleModal('Create', true);
+                        }"
                     />
                     <div 
                         class="flex items-center justify-end gap-2">
-                        <LazyUInput
-                            v-model="emptyValue"
+                        <UInput
+                            v-model="searchValue"
                             name="emptyValue"
-                            placeholder="Search membership name or code..."
+                            placeholder="Search Code or Name..."
                             icon="i-heroicons-magnifying-glass-20-solid"
                             autocomplete="off"
                             color="amber"
-                            :ui="{ icon: { trailing: { pointer: '', container: 'z-20' }, color: 'text-orange-500 dark:text-orange-500' } }">
+                            :ui="{
+                            icon: {
+                                trailing: { pointer: '' },
+                                color: 'text-orange-500 dark:text-orange-400',
+                            },
+                            }"
+                            @input="async (event: Event): Promise<void> => {
+                                const value: string = String((event.target as HTMLInputElement).value);
+                                await searchData(value);
+                            }">
                             <template #trailing>
                                 <UButton
-                                    v-show="emptyValue !== ''"
+                                    v-show="searchValue !== ''"
                                     color="red"
                                     variant="link"
                                     icon="i-heroicons-x-mark-20-solid"
                                     :padded="false"
-                                    @click="emptyValue = ''"
+                                    @click="async (): Promise<void> => {
+                                    searchValue = '';
+                                    await searchData('');
+                                    }"
                                 />
                             </template>
-                        </LazyUInput>
+                        </UInput>
                     </div>
                 </div>
 
@@ -71,11 +95,20 @@
                     </div>
 					<LazyUTable
                         v-model:expand="expand"
-                        :rows="rows"
+                        :rows="memberDb"
                         :columns="selectedColumns"
                         :ui="{
-                            divide: 'divide-orange-400',
-                            th: { base: 'text-orange-400 text-nowrap' }
+                            divide: 'divide-orange-400 ',
+                            th: { base: 'text-orange-400 text-nowrap uppercase' },
+                            td: {
+                                padding: 'py-1'
+                            },
+                            default: {
+                                expandButton: {
+                                    variant: 'solid',
+                                    color: 'red'
+                                }
+                            }
                         }">
                         <template #expand="{ row }">
                             <TransitionGroup
@@ -96,59 +129,66 @@
                                 :containerHeight="150"
                             />
                         </template>
-                        <template #price-data="{ row }">
+                        <template   #points-data="{row}">
+                            <LazyUBadge 
+                                color="primary" 
+                                size="sm"
+                                variant="subtle">
+                                {{ row.points }}
+                            </LazyUBadge>
+                        </template>
+                        <template 
+                            #status-data="{row}">
+                            <LazyUBadge
+                                :color="row.status === 'active' ? 'green' :
+                                        row.status === 'pending' ? 'yellow' :
+                                        row.status === 'banned' ? 'red' : 'gray'"
+                                size="sm"
+                                variant="solid">
+                                {{ row.status }}
+                            </LazyUBadge>
+                        </template>
+                        <template #amount-data="{ row }">
                             <span
-                                class="text-green-500 pb-0.5">
-                                $ {{ row.price?.price_dol }}
-                            </span>
-                            <UDivider  :ui="{
-                                border: {
-                                    border: 'border-2'
-                                }
-                            }" />
-                            <span
-                                class="text-red-500 pt-0.5">
-                                {{ row.price?.price_khr }} KHR
+                                class="text-green-500 dark:text-green-500">
+                                $ {{ row.membership_amount }}
                             </span>
                         </template>
                         <template #action-data="{ row }">
-                            <div
-                                class="flex items-center gap-2">
-                                <LazyUButton
-                                    type="button"
-                                    color="yellow"
-                                    variant="link"
-                                    size="sm"
-                                    icon="material-symbols:edit-square-outline"
-                                    :padded="false"
-                                    
-                                    square
-                                />
-                                <LazyUButton
-                                    type="button"
-                                    color="red"
-                                    variant="link"
-                                    size="sm"
-                                    icon="material-symbols:delete-outline-rounded"
-                                    :padded="false"
-                                    square
-                                />
+                            <div 
+                                class=" flex justify-center">
+                                <UDropdown 
+                                    :items="actionItem(row)" 
+                                    :popper="{ 
+                                        placement: 'bottom-start',
+                                        arrow: true
+                                    }"
+                                    :ui="{
+                                        background: 'bg-white/20 dark:bg-black/30 backdrop-blur-sm dark:backdrop-blur-md border border-white/30 dark:border-black/30 shadow-lg'
+                                    }">
+                                    <UButton 
+                                        size="sm"
+                                        variant="ghost"
+                                        color="amber" 
+                                        trailing-icon="si:more-horiz-square-duotone" 
+                                    />
+                                </UDropdown>
                             </div>
                         </template>
                     </LazyUTable>
-                    <div 
+                    <div
                         class="flex justify-between items-center px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
                         <div 
                             class="space-y-3">
                             <div>
                                 <span class="text-sm leading-5 text-gray-600 dark:text-gray-200">
-                                    Showing
-                                    <span class="font-medium">{{ pageFrom }}</span>
-                                    to
-                                    <span class="font-medium">{{ pageTo }}</span>
-                                    of
-                                    <span class="font-medium">{{ pageTotal }}</span>
-                                    results
+                                Showing
+                                <span class="font-medium">{{ pageFrom }}</span>
+                                to
+                                <span class="font-medium">{{ pageTo }}</span>
+                                of
+                                <span class="font-medium">{{ pageTotal }}</span>
+                                results
                                 </span>
                             </div>
                             <div 
@@ -159,22 +199,44 @@
                                 </span>
                                 <LazyUSelect
                                     v-model="pageCount"
-                                    :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                                    :options="[5, 10, 15, 20]"
                                     class="me-2 w-20"
                                     size="xs"
-                                    color="amber"
+                                    color="white"
+                                    :ui="
+                                    {
+                                        color: {
+                                            white: {
+                                                outline: 'ring-orange-500 dark:ring-orange-500 focus:ring-orange-500 dark:focus:ring-orange-500'
+                                            }
+                                        }
+                                    }"
                                 />
                             </div>
                         </div>
-                        <LazyUPagination 
-                            v-model="page" 
-                            :page-count="pageCount" 
-                            :total="dataAll.length" 
-                            :active-button="{
-                                color: 'amber'
-                            }"
+                        <LazyUPagination
+                            v-model="page"
+                            :page-count="Number(pageCount)"
+                            :total="pageTotal" 
+                            :active-button="{ color: 'amber' }"
                         />
                     </div>
+                    <article>
+                        <MembershipStatus
+                            :open="statusModal"
+                            :member-id="memberId"
+                            @toggle="toggleStatus"
+                            :ui="{
+                                base: 'backdrop-blur-sm border border-white/30',
+                                background: 'bg-white/30 dark:bg-black/30 ',
+                                rounded: 'rounded-2xl',
+                                shadow: 'shadow-lg'
+                            }"
+                            @update:data="async(): Promise<void> => {
+                                await fetchMembership();
+                            }"
+                        />
+                    </article>
                 </div>
             </div>
         </template>
@@ -183,7 +245,8 @@
 
 <script setup lang="ts">
 import { 
-    Membership
+    Membership,
+    ViewMembership
 } from '@/collector/pages';
 import { 
     TooltipImage, 
@@ -193,7 +256,16 @@ import {
 import { 
     MembershipHistory 
 } from '@/collector/expand-table';
-import type { container } from '@nuxt/ui/dist/runtime/ui.config';
+import { 
+    MembershipStatus 
+} from '@/collector/modals';
+import type { 
+    Items, 
+    ResponseStatus 
+} from '@/models/type';
+import { 
+    Delete 
+} from '@/utils/dialog';
 
 
 definePageMeta({
@@ -203,95 +275,216 @@ definePageMeta({
 
 const columns = [
     {
-        label: 'ID',
-        key: '',
-        rowClass: '!text-orange-500'
+        label: '',
+        key: 'action',
+        rowClass: 'px-0'
+    },
+    {
+        label: 'Customer_Id',
+        key: 'customer_id',
     },
     {
         key: 'image',
         label: 'profile'
     },
     {
-        key: 'name',
-        label: 'Name'
+        key: 'frist_name',
+        label: 'frist_name'
     }, 
     {
+        key: 'last_name',
+        label: 'last_name'
+    },
+    {
         key: 'gender',
-        label: 'Gender'
+        label: 'gender'
     },
     {
-        key: 'phone_number',
-        label: 'Tel'
+        key: 'birthdate',
+        label: 'birthdate'
     },
     {
-        key: 'email',
-        label: 'Email'
+        key: 'national_id',
+        label: 'national_id'
     },
     {
-        key: 'card_level',
-        label: 'Card Level'
+        key: 'address',
+        label: 'address'
     },
     {
-        key: 'point',
-        label: 'Point'
+        key: 'phoneNumber',
+        label: 'phoneNumber'
     },
     {
-        key: 'action',
-        label: 'Action'
-    }
+        key: 'amount',
+        label: 'amounts'
+    },
+    {
+        key: 'points',
+        label: 'points'
+    },
+    {
+        key: 'status',
+        label: 'status'
+    },
+    {
+        key: 'remark',
+        label: 'remark'
+    },
+    {
+        key: 'created_at',
+        label: 'created_at'
+    },
+    {
+        key: 'updated_at',
+        label: 'updated_at'
+    },
 ];
 
-const emptyValue: Ref<string> = ref<string>('');
+const actionItem = (row: Items) => [
+    [
+        {
+            label: 'View All',
+            iconClass: 'text-orange-500',
+            icon: 'mdi:file-eye-outline',
+            click: async (): Promise<void> => {
+                memberId.value = Number(row.id)
+                toggleViewMember(true)
+            },
+        },
+        {
+            label: 'Edit',
+            icon: 'material-symbols:box-edit-outline',
+            iconClass: 'text-orange-500 dark:text-orange-500',
+            click: async (): Promise<void> => {
+                memberId.value = Number(row.id);
+                toggleModal('Edit', true);
+            },
+        },
+        {
+            label: 'Modify Status',
+            icon: 'i-heroicons-pencil-square-20-solid',
+            iconClass: 'text-orange-500 dark:text-orange-500',
+            click: async ():Promise<void> => {
+                memberId.value = Number(row.id);
+                toggleStatus(true);
+            }
+        }
+    ],
+    [
+            {
+            label: 'Change Accessory',
+            icon: 'streamline:give-gift',
+            iconClass: 'text-orange-500 dark:text-orange-500',
+            click: async ():Promise<void> => {
+         
+            }
+        },
+        {
+            label: 'Remove',
+            icon: 'mdi:delete-empty-outline',
+            iconClass: 'text-red-500 dark:text-red-400',
+            class: 'text-red-500 dark:text-red-400',
+            click: async(): Promise<void> => {
+                Delete(
+                    'Are you sure?',              
+                    'You won’t be able to revert this!', 
+                    'Deleted!',                     
+                    'Cancelled',                    
+                    'The item has been deleted.',  
+                    'The item is safe :)', async (): Promise<void> => {
+                    let url: string = `membership/${row.id}`;
+                    await postApi('DELETE', url).then(async (res: any): Promise<void> => {
+                        if(!res.error){
+                            await fetchMembership()
+                        }
+                    })
+                })
+            }
+        }
+    ]
+]
+
+const {
+    fetchApi,
+    postApi
+} = useAPI();
+
+const memberId: Ref<number | null> = ref<number | null>(null);
 const openModal: Ref<boolean> = ref<boolean>(false);
+const statusModal: Ref<boolean> = ref<boolean>(false);
 const ModalTitle: Ref<string> = ref<string>('Create');	
+const memberDb: Ref<Items[]> = ref<Items[]>([]);
+const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
+const searchValue: Ref<string> = ref<string>('');
+const viewMember: Ref<boolean> = ref<boolean>(false);
+
+const page:Ref<number> = ref<number>(1);
+const pageCount: Ref<number | string> = ref<number | string>(10); 
+const pageTotal:Ref<number> = ref<number>(0);
+const pageFrom = computed(() => (page.value - 1) * Number(pageCount.value) + 1);
+const selectedColumns = ref([...columns]);
 
 const toggleModal = (title: string, state: boolean): void => {
     openModal.value = state;
     ModalTitle.value = title;
 };
 
+const toggleStatus = (state: boolean): void => {
+    statusModal.value = state;
+}
 
-const dataAll = [
-    { id: 1, name: 'Lindsay Walton', image: 'https://i.pinimg.com/736x/8f/b1/d5/8fb1d5410a11056dad5b9e39631bc8f7.jpg', menu_type: 'drink' },
-    { id: 2, name: 'James Smith', image: '', menu_type: 'food' },
-    { id: 3, name: 'Emma Johnson', image: '', menu_type: 'dessert' },
-    { id: 4, name: 'Oliver Brown', image: '', menu_type: 'drink' },
-    { id: 5, name: 'Sophia Wilson', image: '', menu_type: 'food' },
-    { id: 6, name: 'Liam Martinez', image: '', menu_type: 'dessert' },
-    { id: 7, name: 'Ava Anderson', image: '', menu_type: 'drink' },
-    { id: 8, name: 'Noah Thomas', image: '', menu_type: 'food' },
-    { id: 9, name: 'Isabella White', image: '', menu_type: 'dessert' },
-    { id: 10, name: 'Mason Garcia', image: '', menu_type: 'drink' },
-    { id: 11, name: 'Mia Harris', image: '', menu_type: 'food' },
-    { id: 12, name: 'Ethan Clark', image: '', menu_type: 'dessert' }
-]
-
-const expand = ref({
-    openedRows: [dataAll],
-    row: {}
-});
-
-const selectedColumns = ref([...columns])
-
-const page = ref(1);
-const pageCount = ref(10);
-
-const rows = computed(() => {
-  return dataAll.slice((page.value - 1) * pageCount.value, page.value * pageCount.value);
-});
-
-const pageFrom = computed(() => {
-  return (page.value - 1) * pageCount.value + 1;
-});
+const toggleViewMember = (state: boolean): void => {
+    viewMember.value = state;
+};
 
 const pageTo = computed(() => {
-  const to = page.value * pageCount.value;
-  return to > dataAll.length ? dataAll.length : to;
+    const to = page.value * Number(pageCount.value);
+    return to > pageTotal.value ? pageTotal.value : to;
 });
 
-const pageTotal = computed(() => {
-  return dataAll.length;
+const expand = ref({
+    openedRows: [] as Items[],
+    row: null as Items | null
 });
+
+
+const fetchMembership = async (query = ''): Promise<void> => {
+    let url: string = `membership?page=${page.value}&per_page=${pageCount.value}`;
+    if(query) url += `&search=${query}`;
+
+    const result = (await fetchApi('GET', url)) as ResponseStatus;
+    if (!result.error)
+    {
+        memberDb.value = Array.isArray(result.data)? result.data : [];
+        pageTotal.value = result.total_items || 0;
+    }
+};
+
+const searchData = async (value: string): Promise<void> => {
+    if (/^\s+$/.test(value)) return;
+    if (timeout.value) clearTimeout(timeout.value);
+
+    timeout.value = setTimeout(async () => {
+        page.value = 1;
+        await fetchMembership(value);
+    }, 300);
+}
+
+watch(pageCount, (newVal): void => {
+    if (typeof newVal === 'string') {
+        pageCount.value = Number(newVal);
+    }
+});
+
+watch([page, pageCount], async (): Promise<void> => {
+    await fetchMembership(searchValue.value);
+});
+
+onMounted(async (): Promise<void> => {
+    await fetchMembership();
+});
+
 </script>
 
 <style scoped>

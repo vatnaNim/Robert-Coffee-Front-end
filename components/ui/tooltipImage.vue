@@ -1,9 +1,9 @@
 <template>
     <img
         ref="smallImgRef"
-        @mouseenter="updatePosition"
+        @click="handleClick"
         @mouseleave="fullViewImage = false"
-        class="object-scale-down cursor-pointer hover:shadow-md"
+        class="object-scale-down cursor-pointer hover:shadow-md duration-200 ease-in-out"
         :class="[smallSize, base]"
         :src="scr"
         alt="No Image Avalible"
@@ -50,7 +50,7 @@ const fullViewImage: Ref<boolean> = ref<boolean>(false);
 const smallImgRef: Ref<HTMLElement | null> = ref<HTMLElement | null>(null);
 const bigImagePosition: Ref<Items> = ref<Items>({ left: '0px', top: '0px' });
 
-const updatePosition = (): void => {
+const handleClick = (): void => {
     if (smallImgRef.value) {
         const smallRect = smallImgRef.value.getBoundingClientRect();
         const containerWidth = props.containerWidth;
@@ -60,30 +60,33 @@ const updatePosition = (): void => {
         let topPosition = 0;
 
         switch (props.popper.placement) {
-            case 'right':
-                leftPosition = smallRect.left + smallRect.width + 10; 
-                topPosition = smallRect.top + (smallRect.height - containerHeight) / 2; 
-                break;
-            case 'left':
-                leftPosition = smallRect.left - containerWidth - 10; 
-                topPosition = smallRect.top + (smallRect.height - containerHeight) / 2; 
-                break;
-            case 'top':
-                leftPosition = smallRect.left + (smallRect.width - containerWidth) / 2; 
-                topPosition = smallRect.top - containerHeight - 10; 
-                break;
-            case 'bottom':
-                leftPosition = smallRect.left + (smallRect.width - containerWidth) / 2;
-                topPosition = smallRect.top + smallRect.height + 10; 
-                break;
+        case 'right':
+            leftPosition = smallRect.left + smallRect.width + 10;
+            topPosition = smallRect.top + (smallRect.height - containerHeight) / 2;
+            break;
+        case 'left':
+            leftPosition = smallRect.left - containerWidth - 10;
+            topPosition = smallRect.top + (smallRect.height - containerHeight) / 2;
+            break;
+        case 'top':
+            leftPosition = smallRect.left + (smallRect.width - containerWidth) / 2;
+            topPosition = smallRect.top - containerHeight - 10;
+            break;
+        case 'bottom':
+            leftPosition = smallRect.left + (smallRect.width - containerWidth) / 2;
+            topPosition = smallRect.top + smallRect.height + 10;
+            break;
         }
+
         bigImagePosition.value = {
-            left: `${leftPosition}px`,
-            top: `${topPosition}px`
+        left: `${leftPosition}px`,
+        top: `${topPosition}px`
         };
+
         fullViewImage.value = true;
     }
 };
+
 
 onMounted((): void => {
     fullViewImage.value = false;

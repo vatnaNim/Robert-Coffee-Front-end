@@ -1,9 +1,13 @@
 import Upload from './upload.png';
 import Logo from './logo.jpg';
 import User from './user.png';
+import LoginCover from './loginCover.jpg';
+import MainLogo from './mainLogo.jpg';
 
 export {
     Upload,
     Logo,
-    User
+    User,
+    LoginCover,
+    MainLogo
 };

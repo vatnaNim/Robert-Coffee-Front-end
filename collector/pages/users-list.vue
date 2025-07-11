@@ -148,12 +148,13 @@
                         size="sm"
                         placeholder="Please Enter Password"
                         :required="!props.userId || showInput"
+                        :maxLength="10"
                         padded>
                         <template #trailing>
                             <div 
                                 class="flex items-center gap-x-2">
                                 <span class="text-xs text-orange-500 dark:text-orange-400 font-medium">
-                                    {{ _form.password?.toString().length }}/{{ 6 }}
+                                    {{ _form.password?.toString().length }}/{{ 10 }}
                                 </span>
                                 <LazyUButton
                                     variant="link"
@@ -185,8 +186,8 @@
                                 value: 'admin' 
                             },
                             { 
-                                label: 'Users', 
-                                value: 'users' 
+                                label: 'User', 
+                                value: 'user' 
                             }
                         ]"
                         option-attribute="label"
@@ -201,15 +202,15 @@
                     class="max-w-[280px] w-full"
                     :ui="{ label: { base: 'text-orange-500 dark:text-orange-500' } }">
                     <lazy-u-input 
-                        type="number" 
+                        type="text" 
                         name="phoneNumber" 
                         size="sm" 
                         v-model="_form.phoneNumber"
-                        :maxLength="10"
+                        :maxLength="20"
                         placeholder="Please Enter PhoneNumber">
                         <template #trailing>
                             <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                {{ _form.phoneNumber?.toString().length }}/{{ 10 }}
+                                {{ _form.phoneNumber?.toString().length }}/{{ 20 }}
                             </span>
                         </template>
                     </lazy-u-input>
@@ -297,9 +298,9 @@ const _form = ref<iUsersList>({
     role: '',
     image: '',
     gender: '',
-    phoneNumber: '',
+    phoneNumber: '+855',
     userId: '',
-    acc_status: '',
+    acc_status: 'admin',
 })
 
 const props = withDefaults(defineProps<{userId: number | null; title:string}>(),{
@@ -338,6 +339,7 @@ const initializeId = async (): Promise<void> => {
 const submitUsersList = async (): Promise<void> => {
     let url: string = props.userId? `user/${props.userId}` : 'register';
     let method: string = props.userId ? 'PUT' : 'POST';
+    console.log(_form.value)
     const result = await postApi(method, url, _form.value) as ResponseStatus;
     if(!result.error)
     {
@@ -377,9 +379,9 @@ const clearForm = async (): Promise<void> => {
         role: '',
         image: '',
         gender: '',
-        phoneNumber: '0',
+        phoneNumber: '+855',
         userId: generateId(),
-        acc_status: '',
+        acc_status: 'admin',
     }
 }
 

@@ -31,21 +31,26 @@ import {
     Profile,
     UsersAccount
 } from '@/components/layouts'
+import { 
+    useAuthStore 
+} from '@/stores/auth';
 
 definePageMeta({
   colorMode: 'light'
 })
 
+const auth = useAuthStore();
 const selectedTab: Ref<number> = ref<number>(0);
 
-const tabHeaders = [
-   {
-      label: 'General Settings',
-      icon: 'material-symbols:settings-suggest',
-   },
-   {
-      label: 'Users Account',
-      icon: 'material-symbols:manage-accounts',
-   }
-]
+const tabHeaders = computed(() => [
+    {
+        label: 'General Settings',
+        icon: 'material-symbols:settings-suggest',
+    },
+    {
+        label: 'Users Account',
+        icon: 'material-symbols:manage-accounts',
+        disabled: auth.role === 'user' || auth.role === ''
+    }
+]);
 </script>
