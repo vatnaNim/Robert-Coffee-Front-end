@@ -257,7 +257,6 @@ const {
     gender,
     userId,
     acc_status,
-    created_at,
 } = storeToRefs(authStore);
 const selectedTime: Ref<string> = ref<string>('1h');
 

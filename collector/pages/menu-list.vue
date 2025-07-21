@@ -117,12 +117,7 @@
                     <SelectMenu
                         name="category"
                         size="sm"
-                        :options="[
-                            {
-                                label: 'Test1',
-                                value: 'test1'
-                            }
-                        ]"
+                        :options="categoryOptions"
                         option-attribute="label"
                         value-attribute="value"
                         placeholder="Please select Category"
@@ -225,6 +220,7 @@ import {
     useAPI 
 } from '@/composables/useApi';
 import type { 
+    Items,
     ResponseStatus 
 } from '@/models/type';
 import { 
@@ -255,6 +251,7 @@ const _form = ref<iMenuList>({
 
 const { fetchApi, postApi, isLoading } = useAPI();
 const { generateId, initializeFromExistingId } = useIdGenerator(1, 'D', 3);
+const categoryOptions: Ref<Items[]> = ref<Items[]>([]);
 
 const props = withDefaults(defineProps<{ listId: number | null; title: string }>(), {
   listId: null,
@@ -278,6 +275,15 @@ const initializeId = async (): Promise<void> => {
         _form.value.pro_code = generateId();
     }
 };
+
+const fetchCategoryOption = async (): Promise<void> => {
+    let url: string = `categoryMenu/select-input`;
+    const result = await fetchApi('Get', url) as any;
+    if (!result.error && Array.isArray(result.options)) 
+    {
+        categoryOptions.value = result.options as Items[];
+    }
+}
 
 
 const submitMenuList = async (): Promise<void> => {
@@ -318,8 +324,10 @@ const setData = async (): Promise<void> => {
 watch(() => props.listId, async(id: number | null): Promise<void> => {
     if (id) {
         await setData()
+        await fetchCategoryOption()
     } else {
         await initializeId()
+        await fetchCategoryOption();
     }
 }, { immediate: true });
 

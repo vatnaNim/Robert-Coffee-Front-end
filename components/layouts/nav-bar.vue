@@ -17,7 +17,7 @@
                             <span>
                                 <Icon
                                     name="mdi:calendar-clock"
-                                    class="text-gray-600 dark:text-white text-2xl"
+                                    class="text-orange-600 dark:text-orange-500 text-2xl"
                                 />
                             </span>
                             <span

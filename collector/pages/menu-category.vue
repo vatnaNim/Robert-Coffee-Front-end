@@ -1,5 +1,6 @@
 <template>
     <form
+    @submit.prevent="submitForm"
         class="w-full bg-white dark:bg-gray-900 px-4 py-6 rounded-xl shadow-md flex flex-col gap-y-8">
         <div 
             class="flex gap-x-3 items-center">
@@ -25,6 +26,7 @@
                 <UFormGroup
                     name=""
                     label="Name (ENG)"
+                    v-model="form.name_en"
                     class="flex-1"
                     :ui="{
                         label: {
@@ -51,6 +53,7 @@
                     <LazyUInput
                         name=""
                         size="sm"
+                        v-model="form.name_kh"
                         variant="outline"
                         placeholder="Please enter name in Khmer"
                     />
@@ -77,6 +80,7 @@
                                 value: 'drink'
                             },
                         ]"
+                        v-model="form.menu_type"
                         name=""
                         size="sm"
                         placeholder="Please select menu type"
@@ -104,6 +108,7 @@
                                 value: 'drink'
                             },
                         ]"
+                        v-model="form.items"
                         name=""
                         size="sm"
                         placeholder="Please select items of this category"
@@ -155,6 +160,21 @@ const emits = defineEmits<{
     (event: 'toggle', title: string ,state: boolean): void;
     (event: 'update:data'): void;
 }>();
+
+function submitForm() {
+  console.log('Form submitted:', form.value);
+
+  // Do your API POST/PUT call here
+  emits('update:data');
+  emits('toggle', '', false); // close modal
+}
+const form = ref({
+  name_en: '',
+  name_kh: '',
+  menu_type: '',
+  items: [] as string[],
+});
+
 
 </script>
 

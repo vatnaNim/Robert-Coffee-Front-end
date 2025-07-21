@@ -46,6 +46,10 @@ interface Options
     [key: string]: Items[]
 }
 
+type Avatar = {
+    src: string;
+};
+
 export type
 {
     Column,
@@ -53,5 +57,6 @@ export type
     Tab,
     Items,
     Options,
-    ResponseStatus
+    ResponseStatus,
+    Avatar
 };

@@ -73,7 +73,7 @@
                                     <div 
                                         class="flex items-center gap-x-2">
                                         <span class="text-xs text-orange-500 dark:text-orange-400 font-medium">
-                                            {{ password.toString().length }}/{{ 10 }}
+                                            {{ password.toString().length }}/{{ 6 }}
                                         </span>
                                         <LazyUButton
                                             variant="link"

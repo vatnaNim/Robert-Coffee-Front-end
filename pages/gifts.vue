@@ -1,12 +1,12 @@
 <template>
     <div>
         <template v-if="openModal">
-            <MenuListPage
-                :list-id="modalID"
-                :title="ModalTitle"
+            <Gifts
+                :gift-id="modalID"
+                :title="modalTitle"
                 @toggle="toggleModal"
-                @update:data="async (): Promise<void> => {
-                    await fetchMenuList()
+                 @update:data="async (): Promise<void> => {
+                    await fetchGifts()
                 }"
             />
         </template>
@@ -18,7 +18,7 @@
                     <div 
                         class="flex gap-x-2">
                         <PrimaryBtn
-                            name="Create Menu"
+                            name="CREATE GIFT"
                             size="px-3 py-2 text-sm"
                             @click="async(): Promise<void> => {
                                 modalID = null;
@@ -37,12 +37,12 @@
                                 class="w-6 h-6 transition-transform duration-300 ease-in-out"
                                 :class="showFilter ? 'rotate-180' : 'rotate-0'"
                             />
-                            <span class="font-bold">Filter Menu list</span>
+                            <span class="font-bold uppercase">Filter GIFTS</span>
                         </UButton>
                     </div>
                     <UInput
                         v-model="searchValue"
-                        name="menu-search"
+                        name="emptyValue"
                         placeholder="Search Code or Name..."
                         icon="i-heroicons-magnifying-glass-20-solid"
                         autocomplete="off"
@@ -99,8 +99,7 @@
                                 <SelectMenu
                                     value-attribute="value"
                                     option-attribute="label"
-                                    :options="[
-                                        { label: 'Ex:1', value: 'Ex1' }]"
+                                    :options="[{ label: 'Ex:1', value: 'Ex1' }]"
                                     name=""
                                     size="sm"
                                     color="amber"
@@ -161,22 +160,23 @@
                             />
                         </template>
                         <template #price-data="{ row }">
-                            <span class="text-green-500 pb-0.5">$ {{ row.price?.en_price }}</span>
-                            <UDivider
-                                :ui="{
-                                border: {
-                                    border: 'border-2',
-                                },
-                                }"
-                            />
-                            <span class="text-red-500 pt-0.5">KHR {{ row.price?.kh_price }}</span>
+                            <span class="text-green-500  dark:text-green-500">$ {{ row.price }}</span>
+                        </template>
+                        <template #expires_at-data="{row}">
+                            <span
+                                class="text-red-400 dark:text-red-500">
+                                {{ row.expires_at }}
+                            </span>
                         </template>
                         <template #status-data="{ row }">
                         <UBadge
-                            :label="row.status ? 'Active' : 'Inactive'"
+                            :label="row.status"
                             size="sm"
-                            :color="row.status ? 'green' : 'red'"
+                            :color="row.status === 'active' ? 'green' : 'red'"
                             variant="subtle"
+                            :ui="{
+                                base: 'capitalize'
+                            }"
                         />
                         </template>
                         <template #action-data="{ row }">
@@ -242,9 +242,9 @@
                     </div>
                 </div>
                 <article>
-                    <MenuListStatus
+                    <GiftStatus
                         :open="statusModal"
-                        :menu-id="modalID"
+                        :gift-id="modalID"
                         @toggle="toggleStatus"
                         :ui="{
                             base: 'backdrop-blur-sm border border-white/30',
@@ -253,9 +253,28 @@
                             shadow: 'shadow-lg'
                         }"
                         @update:data="async(): Promise<void> => {
-                            await fetchMenuList();
+                            await fetchGifts();
                         }"
                     />
+                    <GiftSku
+                        :open="skuModal"
+                        :gift-id="modalID"
+                        @toggle="toggleSku"
+                        :ui="{
+                            base: 'backdrop-blur-sm border border-white/30',
+                            background: 'bg-white/30 dark:bg-black/30 ',
+                            rounded: 'rounded-2xl',
+                            shadow: 'shadow-lg'
+                        }"
+                        @update:data="async(): Promise<void> => {
+                            await fetchGifts();
+                        }"
+                    />
+                    <ViewGift 
+                        :gift-id="modalID" 
+                        :open="viewModal" 
+                        @toggle="toggleView" 
+                        />
                 </article>
             </div>
         </template>
@@ -272,7 +291,7 @@ import {
     Filter 
 } from '@/components/icons';
 import { 
-    MenuListPage 
+    Gifts 
 } from '@/collector/pages';
 import type { 
     Items, 
@@ -285,7 +304,9 @@ import {
     useAPI
 } from '@/composables/useApi';
 import { 
-    MenuListStatus 
+    GiftStatus,
+    GiftSku,
+    ViewGift
 } from '@/collector/modals';
 
 definePageMeta({
@@ -295,22 +316,23 @@ definePageMeta({
 
 const columns = [
     { key: 'action', label: 'Action' },
-    { label: 'Code', key: 'pro_code', rowClass: '!text-orange-500' },
+    { label: 'ID', key: 'gift_id', rowClass: '!text-orange-500' },
     { key: 'image', label: 'Image' },
-    { key: 'name_en', label: 'Name(ENG)' },
-    { key: 'name_kh', label: 'Name(KH)' },
+    { key: 'name', label: 'Name' },
     { key: 'price', label: 'Price' },
-    { key: 'category', label: 'Category' },
-    { key: 'remark', label: 'Remark' },
+    { key: 'sku', label: 'SKU' },
+    { key: 'points', label: 'Points' },
     { key: 'status', label: 'Status' },
-    { key: 'created_at', label: 'Create At' },
-    { key: 'updated_at', label: 'Updated At' },
+    { key: 'expires_at', label: 'expired_date' },
+    { key: 'remark', label: 'remark' },
+    { key: 'created_at', label: 'created_at' },
+    { key: 'updated_at', label: 'updated_at' },
 ];
 
 const actionItem = (row: Items) => [
     [
         {
-            label: 'Edit',
+            label: 'Edit Gift',
             icon: 'material-symbols:box-edit-outline',
             click: async (): Promise<void> => {
                 modalID.value = Number(row.id);
@@ -319,14 +341,30 @@ const actionItem = (row: Items) => [
         },
         {
             label: 'Modify Status',
-            icon: 'i-heroicons-pencil-square-20-solid',
+            icon: 'ic:twotone-notifications-active',
             click: async ():Promise<void> => {
                 modalID.value = Number(row.id);
                 toggleStatus(true);
             }
+        },
+        {
+            label: 'Add SKU',
+            icon: 'fluent:gift-card-add-24-regular',
+            click: async ():Promise<void> => {
+                modalID.value = Number(row.id);
+                toggleSku(true);
+            }
         }
     ],
     [
+        {
+            label: 'View Details',
+            icon: 'ic:sharp-remove-red-eye',
+            click: async ():Promise<void> => {
+                modalID.value = Number(row.id);
+                toggleView(true);
+            }
+        },
         {
             label: 'Delete',
             icon: 'mdi:delete-empty-outline',
@@ -343,7 +381,7 @@ const actionItem = (row: Items) => [
                     let url: string = `menuList/${row.id}`;
                     await postApi('DELETE', url).then(async (res: any): Promise<void> => {
                         if(!res.error){
-                            await fetchMenuList()
+                            await fetchGifts()
                         }
                     })
                 })
@@ -361,13 +399,15 @@ const {
 
 const searchValue: Ref<string> = ref<string>('');
 const openModal: Ref<boolean> = ref<boolean>(false);
-const ModalTitle: Ref<string> = ref<string>('Create');
+const modalTitle: Ref<string> = ref<string>('Create');
 const showFilter: Ref<boolean> = ref<boolean>(false);
 const menuDb: Ref<Items[]> = ref<Items[]>([]);
 const modalID: Ref<number | null> = ref<number | null>(null);
 const selectedColumns = ref([...columns]);
 const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
 const statusModal: Ref<boolean> = ref<boolean>(false);
+const skuModal:Ref<boolean> = ref<boolean>(false);
+const viewModal: Ref<boolean> = ref<boolean>(false);
 // page
 const page:Ref<number> = ref<number>(1);
 const pageCount: Ref<number | string> = ref<number | string>(10); 
@@ -382,8 +422,8 @@ const pageTo = computed(() => {
     return to > pageTotal.value ? pageTotal.value : to;
 });
 
-const fetchMenuList = async (query = ''): Promise<void> => {
-    let url = `menuList?page=${page.value}&per_page=${pageCount.value}`;
+const fetchGifts = async (query = ''): Promise<void> => {
+    let url = `gift?page=${page.value}&per_page=${pageCount.value}`;
     if (query) url += `&search=${query}`;
 
     const result = (await fetchApi('GET', url)) as ResponseStatus;
@@ -399,7 +439,7 @@ const searchData = async (value: string): Promise<void> => {
 
     timeout.value = setTimeout(async () => {
         page.value = 1;
-        await fetchMenuList(value);
+        await fetchGifts(value);
     }, 300);
 };
 
@@ -410,24 +450,31 @@ watch(pageCount, (newVal): void => {
 });
 
 watch([page, pageCount], async (): Promise<void> => {
-    await fetchMenuList(searchValue.value);
+    await fetchGifts(searchValue.value);
 });
 
 const toggleModal = (title: string, state: boolean): void => {
     openModal.value = state;
-    ModalTitle.value = title;
+    modalTitle.value = title;
 };
 
 const toggleStatus = (state: boolean): void => {
     statusModal.value = state;
 };
 
+const toggleView = (state: boolean): void => {
+    viewModal.value = state;
+};
+
+const toggleSku = (state: boolean): void => {
+    skuModal.value = state;
+}
 
 const toggleFilter = (): void => {
     showFilter.value = !showFilter.value;
 };
 
 onMounted(async (): Promise<void> => {
-    await fetchMenuList();
+    await fetchGifts();
 });
 </script>

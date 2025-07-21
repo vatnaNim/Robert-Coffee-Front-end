@@ -22,6 +22,11 @@ import History from "./history.vue";
 import MenuListIcon from "./menuList-icon.vue";
 import Back from "./back.vue";
 import AllUser from "./all-user.vue";
+import AddCategory from "./add-category.vue";
+import Prints from "./prints.vue";
+import Gift from "./gift.vue";
+import NoCart from "./noCart.vue";
+import NoItems from "./no-items.vue";
 
 export { 
     ArrowBack,
@@ -47,5 +52,10 @@ export {
     History,
     MenuListIcon,
     Back,
-    AllUser
+    AllUser,
+    AddCategory,
+    Prints,
+    Gift,
+    NoCart,
+    NoItems
 };

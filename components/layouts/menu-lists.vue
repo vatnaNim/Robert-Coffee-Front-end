@@ -2,14 +2,14 @@
     <li
         class="group py-1.5 w-full cursor-pointer hover:bg-black/20 dark:hover:bg-gray-700 duration-150 backdrop-blur-sm"
         :class="{
-            'bg-black/30 dark:bg-gray-700 border-l-4 border-sky-600': route.path === path,
+            'bg-black/30 dark:bg-gray-700 border-l-4 border-orange-600 dark:border-orange-600': route.path === path,
             'bg-gray-300  dark:bg-gray-900': route.path !== path,
             [className as string]: className
         }">
         <NuxtLink
             @click="$emit('setTitle', title)"
             :to="path"
-            class="flex items-center gap-x-3  group-hover:text-white text-gray-600 dark:text-white text-nowrap"
+            class="flex items-center gap-x-3 group-hover:text-white text-gray-600 dark:text-white text-nowrap"
             :class="{
                 'ml-5': classTitle,
                 'ml-9': !classTitle
@@ -20,7 +20,7 @@
                 class="w-6 h-5"
                 :class="{
                     ' text-gray-600 dark:text-white': route.path === path,
-                    'text-gray-600 group-hover:text-white': route.path !== path
+                    'text-orange-600 group-hover:text-white': route.path !== path
                 }"
             />
             <component

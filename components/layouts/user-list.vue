@@ -18,7 +18,7 @@
                 size="sm"
             />
             <p
-                class="text-gray-600 dark:text-white text-bold text-xs lg:text-sm relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:h-[2px] after:bg-gray-600 dark:after:bg-white after:w-0 group-hover:after:w-full after:transition-all after:duration-300">
+                class="text-orange-600 dark:text-orange-500 text-bold text-xs lg:text-sm relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:h-[2px] after:bg-orange-600 dark:after:bg-orange-500 after:w-0 group-hover:after:w-full after:transition-all after:duration-300">
                 {{ username }}
             </p>
         </div>

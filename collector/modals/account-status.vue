@@ -2,10 +2,10 @@
     <LazyUModal 
         v-bind:model-value="open"
         :ui="{
-        base: 'backdrop-blur-sm border border-white/30',
-        background: 'bg-gray-300/20 dark:bg-black/30',
-        rounded: 'rounded-2xl',
-        shadow: 'shadow-lg'
+            base: 'backdrop-blur-sm border border-white/30',
+            background: 'bg-gray-300/20 dark:bg-black/30',
+            rounded: 'rounded-2xl',
+            shadow: 'shadow-lg'
         }">
         <form 
             name="account-status"

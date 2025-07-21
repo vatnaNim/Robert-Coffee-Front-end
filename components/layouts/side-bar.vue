@@ -18,7 +18,7 @@
                     <div 
                         class="rounded-full overflow-hidden w-10 h-10">
                         <img
-                            :src="Logo"
+                            :src="MainLogo"
                             alt="logo"
                             loading="lazy"
                             class="rounded-full"
@@ -41,7 +41,7 @@
                     type="button"
                     class="px-2 lg:block hidden text-[#131010]">
                     <ArrowBack
-                        class="text-sky-600 dark:text-sky-700"
+                        class="text-orange-600 dark:text-orange-700"
                         :class="{
                             '-rotate-180': !expand
                         }"
@@ -65,14 +65,6 @@
                     path="/screen-pos"
                     :class-title="expand ? '' : 'hidden'"
                     @click="() => handleClose('/screen-pos')"
-                    @set-title="showTitle"
-                />
-                <MenuList
-                    :icon="CustomerLists"
-                    title="Customer List"
-                    path="/customer-list"
-                    :class-title="expand ? '' : 'hidden'"
-                    @click="() => handleClose('/customer-list')"
                     @set-title="showTitle"
                 />
                 <MenuList
@@ -105,6 +97,14 @@
                         class-name="pl-3"
                         :class-title="expand ? '' : 'hidden'"
                         @click="() => handleClose('/menu-category')"
+                        @set-title="showTitle"/>
+                    <MenuList
+                        :icon="Gift"
+                        title="Gifts"
+                        path="/gifts"
+                        class-name="pl-3"
+                        :class-title="expand ? '' : 'hidden'"
+                        @click="() => handleClose('/gifts')"
                         @set-title="showTitle"/>
                 </AccordionMenu>
                 <MenuList
@@ -178,8 +178,9 @@ import {
 } from 'pinia';
 import { useMediaQuery } from "@vueuse/core";
 import { Confirm } from '@/utils/dialog/';
-import { Logo } from '@/assets/images';
+import { Logo, MainLogo } from '@/assets/images';
 import Category from '../icons/category.vue';
+import Gift from '../icons/gift.vue';
 
 /**
  * Begin::Set event trigger to parent component

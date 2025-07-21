@@ -1,5 +1,11 @@
 <template>
     <form
+        name="purchasing-form"
+        method="post"
+        enctype="multipart/form-data"
+        @submit.prevent="async (): Promise<void> => {
+            await submitPayment()
+        }"
         class="w-full bg-white/30 dark:bg-black/20  text-gray-600 backdrop-blur-sm px-4 py-4 rounded-lg shadow-md flex flex-col gap-y-4">
         <div 
             class="flex gap-x-3 items-center justify-between bg-white/30 dark:bg-black/20  text-gray-600 border border-gray-600 px-3 py-3 rounded-lg shadow">
@@ -17,14 +23,15 @@
                     Purchasing Items
                 </h1>
             </div>
-            <div class="rounded-md px-2 py-1 text-sm text-white dark:text-gray-100 bg-orange-500 shadow-sm">
-                <span
-                    class="text-orange-300 dark:text-orange-300">
+            <div 
+                class="rounded-md px-2 py-1 text-sm text-white dark:text-gray-100 bg-orange-500 shadow-sm">
+                <span class="text-orange-300 dark:text-orange-300">
                     Currency:
                 </span>
                 <span>
-                    4100
+                    {{ activeTab === 0 ? 'USD' : activeTab === 1 ? 'KHR' : 'Others' }}
                 </span>
+                <small class="block text-xs text-white/70">Rate: 1 USD = {{ exchangeRate }} KHR</small>
             </div>
         </div>
         <div class="w-full flex gap-3">
@@ -37,8 +44,8 @@
                         <div 
                             class="w-full flex flex-col gap-y-1 justify-center items-center">
                             <img 
-                                src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg" 
-                                alt="company logo"
+                                :src="MainLogo" 
+                                alt="Robert Coffee Logo"
                                 class="w-20 h-20 object-fill rounded-full"
                             />
                             <h2
@@ -63,26 +70,39 @@
                                 transition Details:
                             </span>
                             <article>
-                                <span>
+                                <span
+                                    class="font-semibold">
                                     Date:
                                 </span>
                                 <span>
-                                    07/08/2025 07:34PM
+                                    {{ formattedDate }}
                                 </span>
                             </article>
                             <article>
-                                <span>
-                                    Servied by:
+                                <span 
+                                    class="font-semibold">
+                                    Cashier by:
                                 </span>
                                 <span>
-                                    Chan
+                                    {{ username || 'Unknown' }}
+                                </span>
+                            </article>
+                             <article>
+                                <span 
+                                    class="font-semibold">
+                                    Membership:
+                                </span>
+                                <span>
+                                    {{ props.cartData.memberId || 'N/A' }}
                                 </span>
                             </article>
                             <article>
-                                <span>
+                                <span
+                                    class="font-semibold">
                                     NO:
                                 </span>
-                                <span>
+                                <span
+                                    class="text-sm">
                                     # 025255
                                 </span>
                             </article>
@@ -94,7 +114,13 @@
                         <LazyUTable
                             :rows="dataAll"
                             :columns="selectedColumns">
-                            <template #index-data="{ row, index }">{{ index + 1 }}</template>
+                            <template 
+                                #index-data="{ row, index }">
+                                {{ index + 1 }}
+                            </template>
+                            <template #discount-data="{ row }">
+                                % {{ discountPercent || 'N/A' }}
+                            </template>
                         </LazyUTable>
                     </div>
                     <LazyUDivider 
@@ -108,24 +134,32 @@
                     <div 
                         class="py-4 px-4">
                         <article class="w-full flex items-center justify-between border-b-4 border-gray-300 dark:border-gray-200">
+                            <span class="font-semibold text-gray-700 dark:text-gray-300 capitalize">Qty:</span>
+                            <span class="text-gray-800 dark:text-gray-300">{{ props.cartData.totalQty }}</span>
+                        </article>
+                        <article class="w-full flex items-center justify-between border-b-4 border-gray-300 dark:border-gray-200">
                             <span class="font-semibold text-gray-700 dark:text-gray-300 capitalize">Sub total:</span>
-                            <span class="text-gray-800 dark:text-gray-300">$ 1000</span>
+                            <span class="text-gray-800 dark:text-gray-300">$ {{ props.cartData.subTotal.toLocaleString() }}</span>
                         </article>
                         <article class="w-full flex items-center justify-between  border-b-4 border-gray-300 dark:border-gray-200  ">
                             <span class="font-semibold text-gray-700 dark:text-gray-300">Discount:</span>
-                            <span class="text-gray-800 dark:text-gray-300">% 10</span>
+                            <span class="text-gray-800 dark:text-gray-300">% {{ discountPercent }}</span>
+                        </article>
+                        <article class="w-full flex items-center justify-between  border-b-4 border-gray-300 dark:border-gray-200  ">
+                            <span class="font-semibold text-gray-700 dark:text-gray-300">Discount Amount:</span>
+                            <span class="text-gray-800 dark:text-gray-300">$ {{ discountAmount }}</span>
                         </article>
                         <article class="w-full flex items-center justify-between border-b-4 border-gray-300 dark:border-gray-200 ">
-                            <span class="font-semibold text-gray-700 dark:text-gray-300 capitalize">Resive amount:</span>
-                            <span class="text-gray-800 dark:text-gray-300">$ 5000</span>
+                            <span class="font-semibold text-gray-700 dark:text-gray-300 capitalize">Receive amount:</span>
+                            <span class="text-gray-800 dark:text-gray-300">$ {{ paymentAmount }}</span>
                         </article>
                         <article class="w-full flex items-center justify-between border-b-4 border-gray-300 dark:border-gray-200 ">
                             <span class="font-semibold text-gray-700 capitalize dark:text-gray-300">amount due:</span>
-                            <span class="text-gray-800 dark:text-gray-300">400</span>
+                            <span class="text-gray-800 dark:text-gray-300">$ {{ exchangedPaymentUsd.toFixed(2) }}</span>
                         </article>
                         <article class="w-full flex items-end justify-between  border-gray-300 dark:border-gray-300  pt-3">
                             <span class="font-semibold text-gray-700 dark:text-gray-300 text-xl capitalize">Total:</span>
-                            <span class="text-xl text-gray-800 dark:text-gray-300 font-semibold">$ 100</span>
+                            <span class="text-xl text-gray-800 dark:text-gray-300 font-semibold">$ {{ totalAfterDiscount.toFixed(2) }}</span>
                         </article>
                     </div>
                     <LazyUDivider 
@@ -142,8 +176,8 @@
                             Order Number:
                         </span>
                         <span
-                            class="font-bold text-gray-800">
-                            0111
+                            class="font-bold text-gray-800 dark:text-gray-300">
+                            {{ orderNumber.toString().padStart(4, '0') }}
                         </span>
                     </div>
                     <LazyUDivider 
@@ -172,7 +206,7 @@
                     class="flex gap-y-2">
                     <LazyUFormGroup 
                         label="Discount"
-                        name=""
+                        name="discount"
                         :ui="{
                             label: {
                                 base: 'text-orange-500 dark:text-orange-500'
@@ -185,11 +219,20 @@
                             color="white"
                             value-attribute="value"
                             option-attribute="label"
+                            v-model="discountPercent"
                             placeholder="Please select discount"
                             :options="[
                                 {
-                                    label: 'membership 10%',
-                                    value: 'membership 10%'
+                                    label: 'Membership',
+                                    value: '10'
+                                },
+                                {
+                                    label: 'Promotions 50%',
+                                    value: '50'
+                                },
+                                {
+                                    label: 'Spacial Offer',
+                                    value: '100'
                                 }
                             ]"
                         />
@@ -199,7 +242,7 @@
                     class="flex flex-wrap justify-evenly gap-y-6">
                     <LazyUFormGroup 
                         label="Payment BY"
-                        name=""
+                        name="payment_by"
                         :ui="{
                             label: {
                                 base: 'text-orange-500 dark:text-orange-500'
@@ -211,6 +254,7 @@
                             placeholder="Please select payments"
                             size="sm"
                             color="white"
+                            v-model="paymentby"
                             option-attribute="label"
                             value-attribute="value"
                             :options="[
@@ -265,6 +309,19 @@
                                 :items="tabItem"
                                 :model-value="activeTab"
                                 @update:model-value="handleTabChange"
+                                :ui="{
+                                    list:{
+                                        height: 'h-10',
+                                        background: 'bg-gray-300 dark:bg-gray-800',
+                                        tab:{
+                                            height: 'h-8',
+                                            size: 'text-xs',
+                                            rounded: 'rounder-sm',
+                                            active: 'text-orange-500 dark:text-orange-500',
+                                            inactive: 'text-gray-400 dark:text-gray-400'
+                                        }
+                                    }
+                                }"
                                 class="space-y-4"
                             />
                             <article>
@@ -283,14 +340,15 @@
                                         <UInput
                                             name=""
                                             size="sm"
-                                            model-value="500"
-                                            color="gray"
+                                            :color="isOverPaid ? 'primary' : 'red'"
                                             placeholder="no items here for payment"
                                             trailing
-                                            disabled>
+                                            disabled
+                                            :model-value="exchangedPaymentUsd.toFixed(2)">
                                             <template #trailing>
                                                 <span 
-                                                    class="text-sm font-semibold text-green-500">
+                                                    class="text-sm font-semibold"
+                                                    :class="isOverPaid ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500'">
                                                     $
                                                 </span>
                                             </template>
@@ -298,7 +356,7 @@
                                     </LazyUFormGroup>
                                     <LazyUFormGroup
                                         name=""
-                                        label="Payment ($)"
+                                        label="Receive Payment ($)"
                                         :ui="{
                                             label: {
                                                 base: 'text-orange-500 dark:text-orange-500'
@@ -310,9 +368,11 @@
                                             size="sm"
                                             color="white"
                                             placeholder="Please Enter payment"
+                                            type="number"
+                                            v-model="paymentAmount"
                                             trailing>
                                             <template #trailing>
-                                                <span class="text-sm font-semibold text-green-500">
+                                                <span class="text-sm font-semibold dark:text-green-500 text-green-500">
                                                     $
                                                 </span>
                                             </template>
@@ -323,7 +383,7 @@
                                     v-else-if="activeTab === 1"
                                     class="flex gap-2 px-4 py-4 bg-gray-300 dark:bg-gray-800 rounded-md shadow">
                                     <LazyUFormGroup
-                                        name=""
+                                        name="khmer_exchange"
                                         label="Exchange Price (៛)"
                                         :ui="{
                                             label: {
@@ -334,19 +394,50 @@
                                         <UInput
                                             name=""
                                             size="sm"
-                                            model-value="500"
-                                            color="gray"
+                                            type="number"
+                                            :color="isOverPaid ? 'primary' : 'red'"
                                             placeholder="no items here for payment"
                                             trailing
-                                            disabled>
+                                            disabled
+                                            :model-value="exchangedPaymentRial.toFixed(2)">
                                             <template #trailing>
-                                                <Rial class="w-3 h-3 text-red-500"/>
+                                                <Rial 
+                                                    class="w-3 h-3"
+                                                    :class="isOverPaid ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500'"
+                                                />
                                             </template>
                                         </UInput>
                                     </LazyUFormGroup>
                                     <LazyUFormGroup
                                         name=""
-                                        label="Payment (៛)"
+                                        label="Receive Payment (៛)"
+                                        :ui="{
+                                            label: {
+                                                base: 'text-orange-500 dark:text-orange-500'
+                                            }
+                                        }"
+                                        class="flex-1">
+                                        <UInput
+                                            name="receive_rialPayment"
+                                            size="sm"
+                                            color="white"
+                                            v-model="paymentAmountRial"
+                                            placeholder="Please Enter payment"
+                                            trailing>
+                                            <template #trailing>
+                                                <span 
+                                                    :class="isOverPaid ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500'"
+                                                >$</span>
+                                            </template>
+                                        </UInput>
+                                    </LazyUFormGroup>
+                                </div>
+                                <div
+                                    class="flex gap-2 px-4 py-4 bg-gray-300 dark:bg-gray-800 rounded-md shadow"
+                                    v-else>
+                                    <LazyUFormGroup
+                                        name=""
+                                        label="Exchange Price"
                                         :ui="{
                                             label: {
                                                 base: 'text-orange-500 dark:text-orange-500'
@@ -356,18 +447,20 @@
                                         <UInput
                                             name=""
                                             size="sm"
-                                            color="white"
-                                            placeholder="Please Enter payment"
-                                            trailing>
+                                            :color="isOverPaid ? 'primary' : 'red'"
+                                            placeholder="no items here for payment"
+                                            type="number"
+                                            trailing
+                                            disabled
+                                            :model-value="remainingAmountUsd.toFixed(2)">
                                             <template #trailing>
-                                                <Rial class="w-3 h-3 text-red-500"/>
+                                                <Rial 
+                                                    class="w-3 h-3"
+                                                    :class="isOverPaid ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500'"
+                                                />
                                             </template>
                                         </UInput>
                                     </LazyUFormGroup>
-                                </div>
-                                <div
-                                    class="flex gap-2 px-4 py-4 bg-gray-300 dark:bg-gray-800 rounded-md shadow"
-                                    v-else>
                                     <LazyUFormGroup
                                         name=""
                                         label="Exchange Price ($)"
@@ -380,7 +473,7 @@
                                         <UInput
                                             name=""
                                             size="sm"
-                                            model-value="500"
+                                            v-model="paymentAmount"
                                             color="gray"
                                             placeholder="no items here for payment"
                                             trailing>
@@ -393,7 +486,7 @@
                                     </LazyUFormGroup>
                                     <LazyUFormGroup
                                         name=""
-                                        label="Exchange Price (៛)"
+                                        label="Receive Payment (៛)"
                                         :ui="{
                                             label: {
                                                 base: 'text-orange-500 dark:text-orange-500'
@@ -403,17 +496,41 @@
                                         <UInput
                                             name=""
                                             size="sm"
-                                            model-value="500"
-                                            color="gray"
+                                            v-model="paymentAmountRial"
+                                            :color="isOverPaid ? 'primary' : 'red'"
                                             placeholder="no items here for payment"
                                             trailing>
                                             <template #trailing>
-                                                <Rial class="w-3 h-3 text-red-500"/>
+                                                <Rial 
+                                                    class="w-3 h-3"
+                                                    :class="isOverPaid ? 'text-green-500' : 'text-red-500'"
+                                                />
                                             </template>
                                         </UInput>
                                     </LazyUFormGroup>
                                 </div>
                             </article>
+                        </LazyUFormGroup>
+                    </div>
+                    <div class="w-full py-2">
+                        <LazyUFormGroup
+                            label="Remark"
+                            name="remark"
+                            :ui="{
+                                label: {
+                                    base: 'text-orange-500 dark:text-orange-500'
+                                }
+                            }"
+                            class="w-full">
+                            <UTextarea
+                                :rows="3"
+                                block
+                                name="remark"
+                                size="sm"
+                                color="white"
+                                v-model="remarks"
+                                placeholder="Have any remark enter here..."
+                            />
                         </LazyUFormGroup>
                     </div>
                 </div>
@@ -422,8 +539,9 @@
                     size="md"
                     label="Print"
                     color="amber"
+                    type="submit"
                     icon="mdi:printer-outline"
-                    @click="printReceipt"
+                    
                 />
             </div>
         </div>
@@ -431,18 +549,50 @@
 </template>
 
 <script setup lang="ts">
-import { 
-    BackBtn 
-} from '@/components/ui';
 import {
     ChooseImage,
-    SelectMenu
+    SelectMenu,
+    BackBtn
 } from '@/components/ui/';
-import { Rial } from '@/components/icons';
+import { 
+    Rial 
+} from '@/components/icons';
+import type { 
+    Items 
+} from '@/models/type';
+import { 
+    MainLogo 
+} from '@/assets/images';
+import { 
+    useOrderNumber 
+} from '@/composables/useOrderNumber';
+import { useAuthStore } from '@/stores/auth';
+import dayjs from 'dayjs';
 
+interface iCartItem {
+    id: number;
+    name: string;
+    price: number;
+    qty: number;
+    sugar?: string;
+    ice?: string;
+    remark?: string;
+    discount?: string;
+}
+
+interface iCart {
+    id?: number;
+    memberId?: string;
+    orderType?: string;
+    cartItems?: iCartItem[];
+    totalQty: number;
+    totalPrice: number;
+    subTotal: number;
+}
 
 const props = withDefaults(defineProps<{
     id?: number | null,
+    cartData: iCart
 }>(), {
     id: null,
 });
@@ -451,38 +601,6 @@ const emits = defineEmits<{
     (event: 'toggle',state: boolean): void;
     (event: 'update:data'): void;
 }>();
-
-const name = ref('')
-const maxLength = 10;
-
-
-const activeTab: Ref<number> = ref<number>(0);
-const selectedCustomerType = ref<string>('dollar');
-
-const handleTabChange = (value: number): void => {
-    activeTab.value = value;
-    selectedCustomerType.value = value === 0 ? 'dollar' : value === 1 ? 'rial' : 'other';
-};
-
-
-const tabItem = [
-    { 
-        key: 0, 
-        label: 'Dollar', 
-        icon: 'streamline:information-desk-customer' 
-    },
-    { 
-        key: 1, 
-        label: 'Rial', 
-        icon: 'material-symbols-light:card-membership-rounded' 
-    },
-    { 
-        key: 2, 
-        label: 'Others way', 
-        icon: 'material-symbols-light:card-membership-rounded' 
-    }
-];
-
 
 const columns = [
     {
@@ -506,25 +624,54 @@ const columns = [
         label: 'Price'
     }
 ];
+const authStore = useAuthStore();
+const { 
+    orderNumber,
+    generateOrderNumber
+} = useOrderNumber();
+const { 
+    username
+} = storeToRefs(authStore);
 
-const dataAll = [
+const dataAll = computed(() => props.cartData?.cartItems || []);
+const formattedDate = computed(() => dayjs().format('MM/DD/YYYY hh:mmA'));
+const activeTab: Ref<number> = ref<number>(0);
+const selectedCustomerType = ref<string>('dollar');
+const discountPercent = ref(0);
+const selectedColumns = ref([...columns]);
+const subTotal = computed(() => props.cartData.subTotal);
+const exchangeRate: number = 4000;
+const paymentAmount: Ref<number> = ref<number>(0);
+const paymentAmountRial: Ref<number> = ref<number>(0);
+const paymentby: Ref<string> = ref<string>('');
+const remarks: Ref<string> = ref<string>('');
+
+const handleTabChange = (value: number): void => {
+    activeTab.value = value;
+    selectedCustomerType.value = value === 0 ? 'dollar' : value === 1 ? 'rial' : 'other';
+};
+
+const tabItem = [
     { 
-        id: 1, 
-        qty: 2, 
-        name: 'Ice latte',
-        dicount: '10%',
-        price: '10'
+        key: 0, 
+        label: 'Dollar', 
+        icon: 'streamline:information-desk-customer' 
     },
     { 
-        id: 2, 
-        qty: 1, 
-        name: 'Swandwich',
-        dicount: '10%',
-        price: '10'
+        key: 1, 
+        label: 'Rial', 
+        icon: 'material-symbols-light:card-membership-rounded' 
     },
-]
-const selectedColumns = ref([...columns])
-watch(selectedCustomerType, (newValue) => {
+    { 
+        key: 2, 
+        label: 'Others way', 
+        icon: 'material-symbols-light:card-membership-rounded' 
+    }
+];
+
+
+
+watch(selectedCustomerType, (newValue: string) => {
     if (newValue === 'dollar') {
         activeTab.value = 0;
     } else if (newValue === 'rial') {
@@ -533,6 +680,47 @@ watch(selectedCustomerType, (newValue) => {
         activeTab.value = 2;
     }
 });
+/* 
+START:Declare Computed properties 
+*/
+const discountAmount = computed(() => {
+    return (subTotal.value * discountPercent.value) / 100;
+});
+
+const totalAfterDiscount = computed(() => {
+    return subTotal.value - discountAmount.value;
+});
+
+
+const isOverPaid = computed(() => exchangedPaymentUsd.value > 0);
+const exchangedPaymentUsd = computed(() => {
+    return (paymentAmount.value || 0) - totalAfterDiscount.value;
+});
+
+const exchangedPaymentRial = computed(() => {
+  const payment = paymentAmountRial.value || 0;
+  const totalDueInRial = totalAfterDiscount.value * exchangeRate;
+  return payment - totalDueInRial;
+});
+
+
+const exchangedPayment = computed(() => {
+  const totalPaidInDollar = (paymentAmount.value || 0) + (paymentAmountRial.value || 0) / exchangeRate;
+  return totalPaidInDollar - totalAfterDiscount.value;
+});
+
+const totalPaidInDollar = computed(() => {
+  return (paymentAmount.value || 0) + ((paymentAmountRial.value || 0) / exchangeRate);
+});
+
+const remainingAmountUsd = computed(() => {
+  const remain = totalAfterDiscount.value - totalPaidInDollar.value;
+  return remain > 0 ? remain : 0;
+});
+
+/* 
+END:Declare Computed properties 
+*/
 
 const printReceipt = (): void => {
     const printContent = document.getElementById("receipt");
@@ -545,6 +733,49 @@ const printReceipt = (): void => {
         window.location.reload(); 
     }
 };
+
+const submittedPayload = ref<{
+    paymentBy: string;
+    amountType: string;
+    paymentAmount: number;
+    paymentAmountRial: number;
+    currency: string;
+    discountPercent: number;
+    exchangedAmount: number;
+    id?: number;
+    orderType?: string;
+    cartItems?: iCartItem[];
+    totalQty: number;
+    totalPrice: number;
+    subTotal: number;
+    memberId?: string;
+    remark?: string;
+} | null>(null);
+
+const submitPayment = (): void => {
+    const payload = {
+        ...props.cartData,
+        id: Date.now(),
+        amountType: selectedCustomerType.value,
+        paymentBy: paymentby.value,
+        remark: remarks.value,
+        paymentAmount: paymentAmount.value,
+        paymentAmountRial: paymentAmountRial.value,
+        currency: activeTab.value === 0 ? 'USD' : activeTab.value === 1 ? 'KHR' : 'Others',
+        discountPercent: discountPercent.value,
+        exchangedAmount: exchangedPayment.value,
+    };
+
+    console.log('🧾 Final Submit Payload:', payload);
+
+    submittedPayload.value = payload;
+};
+
+onMounted(async(): Promise<void> => {
+    await generateOrderNumber();
+});
+
+
 </script>
 
 <style scoped>
