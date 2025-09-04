@@ -132,6 +132,7 @@
         <div 
             class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
             <LazyUTable
+                class="custom-scrollbar"
                 :rows="rows"
                 :columns="selectedColumns"
                 :ui="{
@@ -238,7 +239,7 @@ import {
 } from '@/components/ui';
 
 definePageMeta({
-    // middleware: 'auth',
+    middleware: 'auth',
     colorMode: 'light'
 });
 

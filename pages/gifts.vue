@@ -86,7 +86,7 @@
                             <Filter class="text-orange-500" />
                             <h2 
                                 class="text-orange-500 font-semibold tracking-wider text-lg">
-                                Filter Menu-list
+                                Filter Gifts
                             </h2>
                         </span>
                         <div 
@@ -142,6 +142,7 @@
                 <div
                     class="bg-white/30 dark:bg-black/20  border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
                     <LazyUTable
+                        class="custom-scrollbar"
                         :rows="menuDb"
                         :columns="selectedColumns"
                         :ui="{
@@ -311,6 +312,7 @@ import {
 
 definePageMeta({
     colorMode: 'light',
+    middleware: 'auth',
 });
 
 

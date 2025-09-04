@@ -1,6 +1,6 @@
 <template>
     <p
-        class="font-semibold font-size-p">Merchants | Packages | Earning | Monthly</p>
+        class="font-semibold font-size-p text-orange-500 dark:text-orange-500">Purchasing Data</p>
     <canvas
         ref="ctx"></canvas>
 </template>
@@ -18,18 +18,11 @@ import type {
  */
 const ctx: Ref<VNodeRef | null> = ref<VNodeRef | null>(null);
 const labels = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
+  'Coffee',
+  'Fapped',
+  'Smooth',
+  'Macha',
+  'Food',
 ];
 const data = {
   labels: labels,

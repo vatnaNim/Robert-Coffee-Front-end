@@ -9,6 +9,7 @@ import GiftStatus from "./gift-status.vue";
 import GiftSku from "./gift-sku.vue";
 import ViewGift from "./view-gift.vue";
 import PurchaseHistory from "./purchaseHistory.vue";
+import OrdersPurchaseItem from "./orders-purchaseItem.vue";
 
 export {
     CustomizeToppings,
@@ -21,5 +22,6 @@ export {
     GiftStatus,
     GiftSku,
     ViewGift,
-    PurchaseHistory
+    PurchaseHistory,
+    OrdersPurchaseItem
 }

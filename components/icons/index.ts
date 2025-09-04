@@ -27,6 +27,7 @@ import Prints from "./prints.vue";
 import Gift from "./gift.vue";
 import NoCart from "./noCart.vue";
 import NoItems from "./no-items.vue";
+import NoData from "./no-data.vue";
 
 export { 
     ArrowBack,
@@ -57,5 +58,6 @@ export {
     Prints,
     Gift,
     NoCart,
-    NoItems
+    NoItems,
+    NoData
 };

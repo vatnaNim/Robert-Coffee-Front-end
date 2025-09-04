@@ -149,9 +149,7 @@
 import { 
     BackBtn 
 } from '@/components/ui';
-import { 
-    usePrintAsPDF 
-} from '@/composables/useDownLoadAsPDF';
+
 import { 
     usePrinting 
 } from '@/composables/usePrinting';

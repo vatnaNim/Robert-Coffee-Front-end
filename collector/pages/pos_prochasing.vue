@@ -103,7 +103,7 @@
                                 </span>
                                 <span
                                     class="text-sm">
-                                    # 025255
+                                    {{ invoiceCode }}
                                 </span>
                             </article>
                         </div>
@@ -224,15 +224,15 @@
                             :options="[
                                 {
                                     label: 'Membership',
-                                    value: '10'
+                                    value: 10
                                 },
                                 {
                                     label: 'Promotions 50%',
-                                    value: '50'
+                                    value: 50
                                 },
                                 {
                                     label: 'Spacial Offer',
-                                    value: '100'
+                                    value: 100
                                 }
                             ]"
                         />
@@ -241,7 +241,7 @@
                 <div 
                     class="flex flex-wrap justify-evenly gap-y-6">
                     <LazyUFormGroup 
-                        label="Payment BY"
+                        label="Payment Method"
                         name="payment_by"
                         :ui="{
                             label: {
@@ -254,7 +254,7 @@
                             placeholder="Please select payments"
                             size="sm"
                             color="white"
-                            v-model="paymentby"
+                            v-model="paymentMethod"
                             option-attribute="label"
                             value-attribute="value"
                             :options="[
@@ -540,8 +540,10 @@
                     label="Print"
                     color="amber"
                     type="submit"
+                    target="_blank"
                     icon="mdi:printer-outline"
-                    
+                    :disabled="isLoading"
+                    :loading="isLoading"
                 />
             </div>
         </div>
@@ -550,7 +552,6 @@
 
 <script setup lang="ts">
 import {
-    ChooseImage,
     SelectMenu,
     BackBtn
 } from '@/components/ui/';
@@ -558,7 +559,8 @@ import {
     Rial 
 } from '@/components/icons';
 import type { 
-    Items 
+    Items, 
+    ResponseStatus
 } from '@/models/type';
 import { 
     MainLogo 
@@ -566,7 +568,15 @@ import {
 import { 
     useOrderNumber 
 } from '@/composables/useOrderNumber';
-import { useAuthStore } from '@/stores/auth';
+import { 
+    useAPI 
+} from '@/composables/useApi';
+import { 
+    useIdGenerator 
+} from '@/composables/useIdGenerator';
+import { 
+    useAuthStore 
+} from '@/stores/auth';
 import dayjs from 'dayjs';
 
 interface iCartItem {
@@ -582,7 +592,7 @@ interface iCartItem {
 
 interface iCart {
     id?: number;
-    memberId?: string;
+    memberId: string;
     orderType?: string;
     cartItems?: iCartItem[];
     totalQty: number;
@@ -600,6 +610,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (event: 'toggle',state: boolean): void;
     (event: 'update:data'): void;
+    (event: 'clear-cart'): void;  
 }>();
 
 const columns = [
@@ -632,6 +643,15 @@ const {
 const { 
     username
 } = storeToRefs(authStore);
+const {
+    fetchApi, 
+    postApi, 
+    isLoading
+} = useAPI();
+const { 
+    generateId,
+    initializeFromExistingId 
+} = useIdGenerator(1, '#', 3);
 
 const dataAll = computed(() => props.cartData?.cartItems || []);
 const formattedDate = computed(() => dayjs().format('MM/DD/YYYY hh:mmA'));
@@ -643,8 +663,9 @@ const subTotal = computed(() => props.cartData.subTotal);
 const exchangeRate: number = 4000;
 const paymentAmount: Ref<number> = ref<number>(0);
 const paymentAmountRial: Ref<number> = ref<number>(0);
-const paymentby: Ref<string> = ref<string>('');
+const paymentMethod: Ref<string> = ref<string>('');
 const remarks: Ref<string> = ref<string>('');
+const invoiceCode = ref<string>('');
 
 const handleTabChange = (value: number): void => {
     activeTab.value = value;
@@ -698,24 +719,24 @@ const exchangedPaymentUsd = computed(() => {
 });
 
 const exchangedPaymentRial = computed(() => {
-  const payment = paymentAmountRial.value || 0;
-  const totalDueInRial = totalAfterDiscount.value * exchangeRate;
-  return payment - totalDueInRial;
+    const payment = paymentAmountRial.value || 0;
+    const totalDueInRial = totalAfterDiscount.value * exchangeRate;
+    return payment - totalDueInRial;
 });
 
 
 const exchangedPayment = computed(() => {
-  const totalPaidInDollar = (paymentAmount.value || 0) + (paymentAmountRial.value || 0) / exchangeRate;
-  return totalPaidInDollar - totalAfterDiscount.value;
+    const totalPaidInDollar = (paymentAmount.value || 0) + (paymentAmountRial.value || 0) / exchangeRate;
+    return totalPaidInDollar - totalAfterDiscount.value;
 });
 
 const totalPaidInDollar = computed(() => {
-  return (paymentAmount.value || 0) + ((paymentAmountRial.value || 0) / exchangeRate);
+    return (paymentAmount.value || 0) + ((paymentAmountRial.value || 0) / exchangeRate);
 });
 
 const remainingAmountUsd = computed(() => {
-  const remain = totalAfterDiscount.value - totalPaidInDollar.value;
-  return remain > 0 ? remain : 0;
+    const remain = totalAfterDiscount.value - totalPaidInDollar.value;
+    return remain > 0 ? remain : 0;
 });
 
 /* 
@@ -734,31 +755,32 @@ const printReceipt = (): void => {
     }
 };
 
-const submittedPayload = ref<{
-    paymentBy: string;
-    amountType: string;
-    paymentAmount: number;
-    paymentAmountRial: number;
-    currency: string;
-    discountPercent: number;
-    exchangedAmount: number;
-    id?: number;
-    orderType?: string;
-    cartItems?: iCartItem[];
-    totalQty: number;
-    totalPrice: number;
-    subTotal: number;
-    memberId?: string;
-    remark?: string;
-} | null>(null);
+const fetchLastInvoiceCode = async (): Promise<void> => {
+  try {
+    const res = await fetchApi('GET', 'purchasing/last-id');
+    if (res.status && res.data?.invoiceCode) {
+      const last = res.data.invoiceCode;
+      const number = parseInt(last.replace('#', '')) || 0;
+      const next = number + 1;
+      invoiceCode.value = `#${next.toString().padStart(4, '0')}`;
+    } else {
+      invoiceCode.value = '#0001';
+    }
+  } catch (err) {
+    console.error('Failed to fetch invoice code:', err);
+    invoiceCode.value = '#0001';
+  }
+};
 
-const submitPayment = (): void => {
+const submitPayment = async(): Promise<void> => {
     const payload = {
         ...props.cartData,
-        id: Date.now(),
+        date: formattedDate.value,
+        orderNumber: generateOrderNumber().toString().padStart(4, '0'),
+        invoiceCode: invoiceCode.value,
         amountType: selectedCustomerType.value,
-        paymentBy: paymentby.value,
-        remark: remarks.value,
+        paymentMethod: paymentMethod.value,
+        remarks: remarks.value,
         paymentAmount: paymentAmount.value,
         paymentAmountRial: paymentAmountRial.value,
         currency: activeTab.value === 0 ? 'USD' : activeTab.value === 1 ? 'KHR' : 'Others',
@@ -766,12 +788,30 @@ const submitPayment = (): void => {
         exchangedAmount: exchangedPayment.value,
     };
 
-    console.log('🧾 Final Submit Payload:', payload);
-
-    submittedPayload.value = payload;
+    console.log('Submit Payload:', payload);
+    const result = await postApi('POST', 'purchasing', payload) as ResponseStatus;
+    if(result)
+    {
+        emits('update:data');
+        emits('toggle', false);
+        clearPropData();
+        printReceipt();
+        selectedCustomerType.value = '';
+        paymentMethod.value = ''; 
+        remarks.value = '';
+        paymentAmount.value = 0;
+        paymentAmountRial.value = 0;
+        discountPercent.value = 0;
+        activeTab.value = 0;
+    } 
 };
 
+const clearPropData = async ():Promise<void> => {
+    emits('clear-cart');
+}
+
 onMounted(async(): Promise<void> => {
+    await fetchLastInvoiceCode();
     await generateOrderNumber();
 });
 

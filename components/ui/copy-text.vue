@@ -3,7 +3,7 @@
         class="relative inline-flex items-center space-x-1 group cursor-pointer"
         @click="copyToClipboard">
         <span 
-            :class="{'text-green-500 underline underline-offset-2': isCopied, 'text-gray-700': !isCopied}">
+            :class="{'text-green-500 underline underline-offset-2': isCopied, 'text-gray-700 dark:text-gray-400': !isCopied}">
             {{ label }}
         </span>
         <span 

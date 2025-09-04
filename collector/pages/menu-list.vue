@@ -285,7 +285,6 @@ const fetchCategoryOption = async (): Promise<void> => {
     }
 }
 
-
 const submitMenuList = async (): Promise<void> => {
     let url: string = props.listId ? `menuList/${props.listId}` : 'menuList';
     const method: string = props.listId ? 'PUT' : 'POST';

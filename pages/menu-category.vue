@@ -43,6 +43,7 @@
         <div 
             class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white rounded-lg shadow-xl">
             <LazyUTable
+                class="custom-scrollbar"
                 :rows="categoryDb"
                 :columns="selectedColumns"
                 :ui="{
@@ -202,9 +203,6 @@
 
 <script setup lang="ts">
 import { 
-    MenuCategory 
-} from '@/collector/pages';
-import { 
     PrimaryBtn 
 } from '@/components/ui';
 import { 
@@ -216,7 +214,7 @@ import { Delete } from '@/utils/dialog';
 
 
 definePageMeta({
-    // middleware: 'auth',
+    middleware: 'auth',
     colorMode: 'light'
 });
 

@@ -5,6 +5,7 @@ import TableCus from "./table_cus.vue";
 import MainCus from "./main_cus.vue";
 import ModalLoading from "./modal-loading.vue";
 import CoffeeLoading from "./coffee-loading.vue";
+import TableLoading from "./table-loading.vue";
 export
 {
     Table,
@@ -13,5 +14,6 @@ export
     TableCus,
     MainCus,
     ModalLoading,
-    CoffeeLoading
+    CoffeeLoading,
+    TableLoading
 };

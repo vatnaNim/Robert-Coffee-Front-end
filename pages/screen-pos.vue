@@ -2,8 +2,9 @@
     <div 
         class="">
         <PosProchasing
-            :cart-data="(submitCart() as any)"
             v-if="openPurchasing"
+            :cart-data="(submitCart() as any)"
+            @clear-cart="clearPropData"
             @toggle="(state: boolean): void => {
                 toggleProchasing(state);
             }"
@@ -518,14 +519,14 @@
                         </div>
                     </div>
                 </article>
-                <article>
+                <ClientOnly>
                     <PurchaseHistory 
                         :open="openHistory"
                         @toggle="(state: boolean): void => {
                             togglePurchaseHistory(state);
                         }"
                     />
-                </article> 
+                </ClientOnly>
             </div>
         </template>   
     </div>
@@ -558,8 +559,8 @@ import {
 } from '@/components/icons';
 
 interface iSubmitCart {
-    id: number;
-    memberId?: number;
+    id?: number;
+    memberId?: string;
     orderType: string;
     cartItems: Items[];
     totalQty: number;
@@ -568,7 +569,7 @@ interface iSubmitCart {
 }
 
 interface MenuItem {
-    id: number | string;
+    id?: number | string;
     pro_code: string;
     name_en: string;
     image: string;
@@ -591,7 +592,8 @@ const itemsTap = [
 
 
 definePageMeta({
-    colorMode: 'light'
+    colorMode: 'light',
+    middleware: 'auth',
 });
 
 const { 
@@ -608,8 +610,8 @@ const giftDb: Ref<Items[]> = ref<Items[]>([]);
 const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
 const membershipOptions: Ref<Items[]> = ref<Items[]>([]);
 const categoryOptions: Ref<Items[]> = ref<Items[]>([]);
-const selectedMemberId = ref<number | undefined>(undefined);
-const selectedOrderType = ref<string>('');
+const selectedMemberId: Ref<string> = ref<string>("No Membership");
+const selectedOrderType = ref<string>('dine in');
 const cartItems: Ref<Items[]> = ref<Items[]>([]);
 
 const page:Ref<number> = ref<number>(1);
@@ -647,6 +649,7 @@ const fetchMenuList = async (query = ''): Promise<void> => {
     let url = `menuList?page=${page.value}&per_page=${pageCount.value}`;
     if (query) url += `&search=${query}`;
     if (menuListvariant.value) url += `&search=${menuListvariant.value}`;
+    console.log(menuListvariant.value)
 
     const result = (await fetchApi('GET', url)) as ResponseStatus;
     if (!result.error) {
@@ -685,7 +688,10 @@ const fetchMembersOption = async (): Promise<void> => {
     const result = await fetchApi('Get', url) as any;
     if (!result.error && Array.isArray(result.options)) 
     {
-        membershipOptions.value = result.options as Items[];
+        membershipOptions.value = [
+            { label: 'No Membership', value: 'No Membership' },
+            ...result.options as Items[],
+        ]
     }
 }
 
@@ -763,8 +769,8 @@ const removeCartItem = (item: Items): void => {
 
 const resetCart = async (): Promise<void> => {
     cartItems.value = [];
-    selectedMemberId.value = undefined;
-    selectedOrderType.value = '';
+    selectedMemberId.value = "No Membership";
+    selectedOrderType.value = 'dine in';
 };
 
 const totalQty = computed(() => {
@@ -778,7 +784,6 @@ const totalPrice = computed(() => {
 const subTotal = computed(() => {
     return totalPrice.value;
 });
-
 
 /* 
 START:Declare Wactch Function
@@ -809,7 +814,6 @@ START:Declare Submit Cart
 */
 const submitCart = (): iSubmitCart => {
     const payload: iSubmitCart = {
-        id: Date.now(),
         memberId: selectedMemberId.value,
         orderType: selectedOrderType.value,
         cartItems: cartItems.value,
@@ -817,18 +821,25 @@ const submitCart = (): iSubmitCart => {
         totalPrice: totalPrice.value,
         subTotal: subTotal.value,
     };
-
     return payload;
 };
 
+const clearPropData = async(): Promise<void> => {
+    selectedMemberId.value = "No Membership";
+    selectedOrderType.value = 'dine in';
+    cartItems.value = [];
+    searchMenuList.value = '';
+    menuListvariant.value = '';
+    page.value = 1;
+    pageCount.value = 10;
+    pageTotal.value = 0;
+};
 
 /* 
-START:Declare Submit Cart
+END:Declare Submit Cart
 */
 
-/* 
-END:Declare Fetch API
-*/
+
 
 onMounted(async(): Promise<void> => {
     await fetchMenuList()

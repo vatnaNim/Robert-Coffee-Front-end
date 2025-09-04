@@ -27,7 +27,7 @@
                             }"
                         />
                         <UButton
-                            variant="solid"
+                            :variant="showFilter? 'soft' : 'solid'"
                             class="rounded-lg"
                             size="sm"
                             color="amber"
@@ -41,7 +41,7 @@
                         </UButton>
                     </div>
                     <UInput
-                        v-model="searchValue"
+                        v-model="filters.search"
                         name="menu-search"
                         placeholder="Search Code or Name..."
                         icon="i-heroicons-magnifying-glass-20-solid"
@@ -59,13 +59,13 @@
                         }">
                         <template #trailing>
                             <UButton
-                                v-show="searchValue !== ''"
+                                v-show="filters.search !== ''"
                                 color="red"
                                 variant="link"
                                 icon="i-heroicons-x-mark-20-solid"
                                 :padded="false"
                                 @click="async (): Promise<void> => {
-                                searchValue = '';
+                                filters.search = '';
                                 await searchData('');
                                 }"
                             />
@@ -90,51 +90,46 @@
                             </h2>
                         </span>
                         <div 
-                            class="w-full flex gap-x-2">
+                            class="w-full flex gap-x-1">
+                            <UFormGroup
+                                name="category"
+                                label="CATEGORY"
+                                class="flex-1"
+                                :ui="{ label: { base: 'text-orange-500' } }">
+                                <SelectMenu
+                                    v-model="filters.category"
+                                    value-attribute="value"
+                                    option-attribute="label"
+                                    :options="categoryOptions"
+                                    name=""
+                                    size="sm"
+                                    color="amber"
+                                    placeholder="Select Category..."
+                                />
+                            </UFormGroup>
                             <UFormGroup
                                 name=""
-                                label="CATEGORY"
+                                label="STATUS"
                                 class="flex-1"
                                 :ui="{ label: { base: 'text-orange-500' } }">
                                 <SelectMenu
                                     value-attribute="value"
                                     option-attribute="label"
                                     :options="[
-                                        { label: 'Ex:1', value: 'Ex1' }]"
-                                    name=""
+                                        { 
+                                            label: 'Active',
+                                            value: 1 
+                                        },
+                                        {
+                                            label: 'Inactive',
+                                            value: 0
+                                        }
+                                    ]"
+                                    name="status"
                                     size="sm"
                                     color="amber"
-                                    placeholder="Select "
-                                />
-                            </UFormGroup>
-                            <UFormGroup
-                                name=""
-                                label="MENU TYPE"
-                                class="flex-1"
-                                :ui="{ label: { base: 'text-orange-500' } }">
-                                <SelectMenu
-                                    value-attribute="value"
-                                    option-attribute="label"
-                                    :options="[{ label: 'Ex:1', value: 'Ex1' }]"
-                                    name=""
-                                    size="sm"
-                                    color="amber"
-                                    placeholder="Select "
-                                />
-                            </UFormGroup>
-                            <UFormGroup
-                                name=""
-                                label="DISCOUNT TYPE"
-                                class="flex-1"
-                                :ui="{ label: { base: 'text-orange-500' } }">
-                                <SelectMenu
-                                    value-attribute="value"
-                                    option-attribute="label"
-                                    :options="[{ label: 'Ex:1', value: 'Ex1' }]"
-                                    name=""
-                                    size="sm"
-                                    color="amber"
-                                    placeholder="Select "
+                                    v-model="filters.status"
+                                    placeholder="Select Status..."
                                 />
                             </UFormGroup>
                         </div>
@@ -143,11 +138,12 @@
                 <div
                     class="bg-white/30 dark:bg-black/20  border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
                     <LazyUTable
+                        class="custom-scrollbar"
                         :rows="menuDb"
                         :columns="selectedColumns"
                         :ui="{
-                        divide: 'divide-orange-400',
-                        th: { base: 'text-orange-400 text-nowrap uppercase text-sm' },
+                            divide: 'divide-orange-400',
+                            th: { base: 'text-orange-400 text-nowrap uppercase text-sm' },
                         }">
                         <template #image-data="{ row }">
                             <TooltipImage
@@ -289,9 +285,9 @@ import {
 } from '@/collector/modals';
 
 definePageMeta({
-    colorMode: 'light',
+    middleware: 'auth',
+    colorMode: 'light'
 });
-
 
 const columns = [
     { key: 'action', label: 'Action' },
@@ -359,7 +355,6 @@ const {
     postApi 
 } = useAPI();
 
-const searchValue: Ref<string> = ref<string>('');
 const openModal: Ref<boolean> = ref<boolean>(false);
 const ModalTitle: Ref<string> = ref<string>('Create');
 const showFilter: Ref<boolean> = ref<boolean>(false);
@@ -368,11 +363,18 @@ const modalID: Ref<number | null> = ref<number | null>(null);
 const selectedColumns = ref([...columns]);
 const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
 const statusModal: Ref<boolean> = ref<boolean>(false);
+const filters: Ref<Items> = ref<Items>({
+    search: '',
+    category: '',
+    status: 1  
+});
+
 // page
 const page:Ref<number> = ref<number>(1);
 const pageCount: Ref<number | string> = ref<number | string>(10); 
 const pageTotal:Ref<number> = ref<number>(0);
 const pageFrom = computed(() => (page.value - 1) * Number(pageCount.value) + 1);
+const categoryOptions: Ref<Items[]> = ref<Items[]>([]);
 // page
 /* 
     End:Declare varrible
@@ -382,10 +384,28 @@ const pageTo = computed(() => {
     return to > pageTotal.value ? pageTotal.value : to;
 });
 
-const fetchMenuList = async (query = ''): Promise<void> => {
-    let url = `menuList?page=${page.value}&per_page=${pageCount.value}`;
-    if (query) url += `&search=${query}`;
 
+const fetchCategoryListOption = async (): Promise<void> => {
+    let url: string = `categoryMenu/select-input`;
+    const result = await fetchApi('Get', url) as any;
+    if (!result.error && Array.isArray(result.options)) 
+    {
+        categoryOptions.value = result.options as Items[];
+    }
+}
+
+const fetchMenuList = async (): Promise<void> => {
+    let url = `menuList?page=${page.value}&per_page=${pageCount.value}`;
+
+    if (filters.value.search) {
+        url += `&search=${filters.value.search}`;
+    }
+    if (filters.value.category) {
+        url += `&category=${filters.value.category}`;
+    }
+    if (filters.value.status) {
+        url += `&status=${filters.value.status}`;
+    }
     const result = (await fetchApi('GET', url)) as ResponseStatus;
     if (!result.error) {
         menuDb.value = Array.isArray(result.data) ? result.data : [];
@@ -399,7 +419,8 @@ const searchData = async (value: string): Promise<void> => {
 
     timeout.value = setTimeout(async () => {
         page.value = 1;
-        await fetchMenuList(value);
+        filters.value.search = value;
+        await fetchMenuList();
     }, 300);
 };
 
@@ -410,8 +431,13 @@ watch(pageCount, (newVal): void => {
 });
 
 watch([page, pageCount], async (): Promise<void> => {
-    await fetchMenuList(searchValue.value);
+    await fetchMenuList();
 });
+
+watch(filters, async (): Promise<void> => {
+    page.value = 1;
+    await fetchMenuList();
+}, { deep: true });
 
 const toggleModal = (title: string, state: boolean): void => {
     openModal.value = state;
@@ -428,6 +454,7 @@ const toggleFilter = (): void => {
 };
 
 onMounted(async (): Promise<void> => {
+    await fetchCategoryListOption(); 
     await fetchMenuList();
 });
 </script>

@@ -36,7 +36,8 @@ import {
 } from '@/stores/auth';
 
 definePageMeta({
-  colorMode: 'light'
+    colorMode: 'light',
+    middleware: 'auth',
 })
 
 const auth = useAuthStore();

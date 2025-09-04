@@ -1,404 +1,350 @@
 <template>
     <div 
-        class="space-y-2">
-        <div
-            class="bg-white/30 dark:bg-black/20 border-gray-200 dark:border-white border px-4 py-6 rounded-lg shadow-md flex flex-col gap-y-4 ">
-            <div 
-                class="circle-chart text-center">
-                <CircleCharts/>
-            </div>    
-        </div>
+        class="bg-white/30 dark:bg-black/20 border-gray-200 dark:border-white border px-4 py-6 rounded-lg shadow-md flex flex-col gap-y-4">
+        <h2
+            class="font-semibold text-orange-500 dark:text-orange-500 text-lg">
+            Today's Reports
+        </h2>
         <div 
-            class="px-3 py-3 bg-white/30 dark:bg-black/20 shadow-md border border-gray-200 dark:border-white  rounded-lg overflow-x-auto space-y-2">
-            <div class="flex justify-between items-center">
-                <h2
-                    class="uppercase text-sm font-semibold text-gray-600 dark:text-gray-300">
-                    All today payments
-                </h2>
-                <UInput
-                        v-model="emptyValue"
-                        name="emptyValue"
-                        placeholder="Search Receipt Code..."
-                        icon="i-heroicons-magnifying-glass-20-solid"
-                        autocomplete="off"
-                        size="xs"
-                        class="w-[200px]"
-                        color="amber"
-                        :ui="{ icon: { 
-                            trailing: { pointer: '' },
-                            color: 'text-orange-500 dark:text-orange-400' } }">
-                        <template #trailing>
-                        <UButton
-                            v-show="emptyValue !== ''"
-                            color="red"
-                            variant="link"
-                            icon="i-heroicons-x-mark-20-solid"
-                            :padded="false"
-                            @click="emptyValue = ''"
-                        />
-                        </template>
-                    </UInput>
-            </div>
-            <LazyUTable
-                :rows="rows"
-                :columns="selectedColumns"
-                :ui="{
-                    divide: 'divide-orange-400',
-                    th: { base: 'text-orange-400 text-nowrap' }
-                }">
-                <template #price-data="{ row }">
-                    <span
-                        class="text-green-500 pb-0.5">
-                        $ {{ row.price?.price_dol }}
-                    </span>
-                    <UDivider  :ui="{
-                        border: {
-                            border: 'border-2'
-                        }
-                    }" />
-                    <span
-                        class="text-red-500 pt-0.5">
-                        {{ row.price?.price_khr }} KHR
-                    </span>
-                </template>
-                <template #action-data="{ row }">
-                    <div
-                        class="flex items-center gap-2">
-                        <LazyUButton
-                            type="button"
-                            color="yellow"
-                            variant="link"
-                            size="sm"
-                            icon="material-symbols:edit-square-outline"
-                            :padded="false"
-                            
-                            square
-                        />
-                        <LazyUButton
-                            type="button"
-                            color="red"
-                            variant="link"
-                            size="sm"
-                            icon="material-symbols:delete-outline-rounded"
-                            :padded="false"
-                            square
-                            
-                        />
-                    </div>
-                </template>
-            </LazyUTable>
-            <div 
-                class="flex justify-between items-center px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
-                <div 
-                    class="space-y-3">
-                    <div>
-                        <span class="text-sm leading-5 text-gray-600 dark:text-gray-200">
-                            Showing
-                            <span class="font-medium">{{ pageFrom }}</span>
-                            to
-                            <span class="font-medium">{{ pageTo }}</span>
-                            of
-                            <span class="font-medium">{{ pageTotal }}</span>
-                            results
-                        </span>
-                    </div>
-                    <div 
-                        class="flex items-center gap-1.5">
-                        <span 
-                            class="text-sm leading-5 font-semibold text-orange-400">
-                            Rows per page:
-                        </span>
-                        <LazyUSelect
-                            v-model="pageCount"
-                            :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                            class="me-2 w-20"
-                            size="xs"
-                            color="amber"
-                        />
-                    </div>
-                </div>
-                <LazyUPagination 
-                    v-model="page" 
-                    :page-count="pageCount" 
-                    :total="dataAll.length" 
-                    :active-button="{
-                        color: 'amber'
-                    }"
+            class="flex justify-center gap-x-6">
+            <article
+                class="bg-gray-300/30 dark:bg-black/20 border-orange-500 dark:border-orange-500 border px-3 py-4 rounded-lg shadow-md w-40 text-gray-600 dark:text-gray-300 flex flex-col items-center justify-center gap-y-1.5">
+                <LazyUIcon
+                    name="cib:buy-me-a-coffee"
+                    class="w-8 h-8"
                 />
-            </div>
+                <span
+                    class="text-sm">
+                    <span class="font-semibold text-orange-500 dark:text-orange-500">Total Qtys:</span> <span>{{ totalQty || 'N/A' }}</span>
+                </span>
+            </article>
+            <article
+                class="bg-gray-300/30 dark:bg-black/20 border-orange-500 dark:border-orange-500 border px-3 py-4 rounded-lg shadow-md w-40 text-gray-600 dark:text-gray-300 flex flex-col items-center justify-center gap-y-1.5">
+                <LazyUIcon
+                    name="ic:sharp-point-of-sale"
+                    class="w-8 h-8"
+                />
+                <span
+                    class="text-sm">
+                    <span class="font-semibold text-orange-500 dark:text-orange-500">Total Sale:</span> <span>${{ totalSale || 'N/A'  }}</span>
+                </span>
+            </article>
+            <article
+                class="bg-gray-300/30 dark:bg-black/20 border-orange-500 dark:border-orange-500 border px-3 py-4 rounded-lg shadow-md w-40 text-gray-600 dark:text-gray-300 flex flex-col items-center justify-center gap-y-1.5">
+                <LazyUIcon
+                    name="material-symbols:order-approve"
+                    class="w-8 h-8"
+                />
+                <span
+                    class="text-sm">
+                    <span class="font-semibold text-orange-500 dark:text-orange-500">Total Order:</span> <span>{{ totalOrders || 'N/A' }}</span>
+                </span>
+            </article>
+            <article
+                class="bg-gray-300/30 dark:bg-black/20 border-orange-500 dark:border-orange-500 border px-3 py-4 rounded-lg shadow-md w-40 text-gray-600 dark:text-gray-300 flex flex-col items-center justify-center gap-y-1.5">
+                <LazyUIcon
+                    name="ic:outline-discount"
+                    class="w-8 h-8"
+                />
+                <span
+                    class="text-sm">
+                    <span class="font-semibold text-orange-500 dark:text-orange-500">Total Discount:</span> <span>${{ totalDiscount.toFixed(2) || 'N/A' }}</span>
+                </span>
+            </article>
         </div>
-        <div
-            class="bg-white/30 dark:bg-black/20 border-gray-200 dark:border-white border px-4 py-6 rounded-lg shadow-md flex flex-col gap-y-4">    
-            <div 
-                class="circle-chart flex items-center flex-col">
+        <div    
+            class="w-full  flex mt-4">
+            <div class="h-[400px] flex-1 flex flex-col items-center ">
                 <BarCharts/>
             </div>
+            <div class=" w-[200px] border border-orange-500 dark:border-orange-500 rounded-md shadow-md bg-gray-300/30 dark:bg-black/20 px-3 py-2 space-y-3">
+                <div
+                    class="text-lg font-semibold flex items-center gap-2">
+                    <LazyUIcon
+                        name="material-symbols:contract-edit-sharp"
+                        class="w-6 h-6 text-orange-500 dark:text-orange-500"
+                    />
+                    <span
+                        class="text-orange-500 dark:text-orange-500 ">
+                        Action
+                    </span>
+                </div>
+                <UFormGroup
+                    name=""
+                    label="Print As Excel"
+                    :ui="{
+                        label:{
+                            base: 'font-semibold text-orange-500 dark:text-orange-500'
+                        }
+                    }">
+                    <LazyUButton
+                        size="sm"
+                        color="primary"
+                        label="Print Excel"
+                        icon="ri:file-excel-2-line"
+                        block
+                    />
+                </UFormGroup>
+                <UFormGroup
+                    name=""
+                    label="Print Reports As PDF"
+                    :ui="{
+                        label:{
+                            base: 'font-semibold text-orange-500 dark:text-orange-500'
+                        }
+                    }">
+                    <LazyUButton
+                        size="sm"
+                        color="red"
+                        label="Print PDF"
+                        icon="bi:file-earmark-pdf-fill"
+                        block
+                    />
+                </UFormGroup>
+                <UFormGroup
+                    name=""
+                    label="Close Shift"
+                    :ui="{
+                        label:{
+                            base: 'font-semibold text-orange-500 dark:text-orange-500'
+                        }
+                    }">
+                    <LazyUButton
+                        size="sm"
+                        color="amber"
+                        label="Close Shift"
+                        icon="material-symbols:shift-lock-outline-rounded"
+                        block
+                        @click="comfileDialog()"
+                    />
+                </UFormGroup>
+            </div>
         </div>
-
-        <div class="">
+        <div 
+            class="mt-5">
+            <div class="flex justify-between">
+                <h2
+                    class="font-semibold text-gray-600 dark:text-gray-400 text-lg">
+                    Today's History
+                </h2>
+                <div 
+                    class="py-1">
+                     <UInput
+                        v-model="searchValue"
+                        name="menu-search"
+                        placeholder="Search Recipt_code/Order_number"
+                        icon="i-heroicons-magnifying-glass-20-solid"
+                        autocomplete="off"
+                        color="amber"
+                        class="w-[400px]"
+                        :ui="{
+                        icon: {
+                            trailing: { pointer: '' },
+                            color: 'text-orange-500 dark:text-orange-400',
+                        },
+                        }"
+                        @input="async (event: Event): Promise<void> => {
+                            const value: string = String((event.target as HTMLInputElement).value);
+                            await searchData(value);
+                        }">
+                        <template #trailing>
+                            <UButton
+                                v-show="searchValue !== ''"
+                                color="red"
+                                variant="link"
+                                icon="i-heroicons-x-mark-20-solid"
+                                :padded="false"
+                                @click="async (): Promise<void> => {
+                                    searchValue = '';
+                                    await searchData('');
+                                }"
+                            />
+                        </template>
+                    </UInput>
+                </div>
+            </div>
+            <div 
+                class="border border-orange-500 dark:text-orange-500 px-0.5 py-2 rounded-md shadow-md ">
+                <LazyUTable
+                    class="custom-scrollbar"
+                    :rows="dataAll"
+                    :columns="selectedColumns"
+                    :ui="{
+                            divide: 'divide-orange-400',
+                            th: { base: 'text-orange-400 text-nowrap uppercase text-xs' },
+                        }">
+                    <template 
+                        #index-data="{ row, index }">
+                        <span
+                            class="text-orange-500 dark:text-orange-500">
+                            {{ index + 1 }}
+                        </span>
+                    </template>
+                    <template
+                        #reciptCode-data="{row}">
+                        <span
+                            class="text-orange-500 dark:text-orange-500">
+                            {{ row.reciptCode }}
+                        </span>
+                    </template>
+                    <template #totalQty-data="{row}">
+                        <span class="capitalize">
+                            {{ row.totalQty }} UNITS
+                        </span>
+                    </template>
+                    <template #totalPrice-data="{row}">
+                        $ {{ row.totalPrice }}
+                    </template>
+                    <template #amountType-data="{row}">
+                        <span class="capitalize">
+                            {{ row.amountType }}
+                        </span>
+                    </template>
+                    <template #subTotal-data="{row}">
+                        <span class="capitalize">
+                            $ {{ row.subTotal }}
+                        </span>
+                    </template>
+                    <template #paymentMethod-data="{row}">
+                        <span
+                            class="capitalize">
+                            {{ row.paymentMethod }}
+                        </span>
+                    </template>
+                    <template
+                        #discountPercent-data="{row}">
+                        <span>
+                            % {{ parseInt(row.discountPercent) }}
+                        </span>
+                    </template>
+                    <template #discountAmount-data="{row}">
+                        <span
+                            class="text-green-500 dark:text-green-500">
+                            $ {{ row.discountAmount.toFixed(2) }}
+                        </span>
+                    </template>
+                </LazyUTable>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { BarCharts, CircleCharts } from '@/components/charts';
-import { Alert, Delete, Success } from '@/utils/dialog';
+import type { Items, ResponseStatus } from '@/models/type';
+import { Alert, Confirm, Delete, Success } from '@/utils/dialog';
+
 
 
 
 const columns = [
     {
-        label: '#Code',
-        key: 'code',
-        rowClass: '!text-orange-500'
+        label: 'No',
+        key: 'index',
     },
     {
-        key: 'name_en',
-        label: 'Time'
+        key: 'invoiceCode',
+        label: 'Recipt_code',
+    },
+    {
+        key: 'orderNumber',
+        label: 'orderNumber',
+    },
+    {
+        key: 'date',
+        label: 'date',
+    },
+    {
+        key: 'memberId',
+        label: 'membership',
     }, 
     {
-        key: 'nam',
-        label: ''
-    }, 
-    {
-        key: 'price',
-        label: 'Price'
+        key: 'totalQty',
+        label: 'Total_Qty',
     },
     {
-        key: 'discount_type',
-        label: 'Discount Type'
+        key: 'totalPrice',
+        label: 'TotalPrice',
     },
     {
-        key: 'afterDiscount',
-        label: 'After Discount'
+        key: 'subTotal',
+        label: 'Subtotal',
     },
     {
-        key: 'menuType',
-        label: 'Type'
+        key: 'amountType',
+        label: 'Amount_Type',
     },
     {
-        key: 'category',
-        label: 'Category'
+        key: 'paymentMethod',
+        label: 'PaymentMethod'
     },
     {
-        key: 'remark',
-        label: 'Remark'
+        key: 'discountPercent',
+        label: 'Discount_Percent',
     },
     {
-        key: 'createdAt',
-        label: 'Create At'
+        key: 'discountAmount',
+        label: 'Discount_Amount',
     },
-    {
-        key: 'action',
-        label: 'Action'
-    }
 ];
-
-const dataAll = [
-    { 
-        id: 1, 
-        code: '0001', 
-        image: 'https://www.livveganstrong.com/wp-content/uploads/2024/08/blueberry-iced-latte-500x500.jpg', 
-        name_en: 'Ice Latte', 
-        name_kh: 'កាឡាតេអាយស៍', 
-        price: {
-            price_khr: 44900, 
-            price_dol: 10.99, 
-        },
-        discount_type: 'Promotion 10%',
-        afterDiscount: 9.89, 
-        menuType: 'drink', 
-        category: 'beverage', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 2, 
-        code: '0002', 
-        image: 'https://source.unsplash.com/200x200/?grilled-chicken', 
-        name_en: 'Grilled Chicken', 
-        name_kh: 'សាច់មាន់អាំង', 
-        price: {
-            price_khr: 63350, 
-            price_dol: 15.49, 
-        },
-        discount_type: 'Promotion 5%',
-        afterDiscount: 14.72, 
-        menuType: 'food', 
-        category: 'main course', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 3, 
-        code: '0003', 
-        image: 'https://source.unsplash.com/200x200/?dessert', 
-        name_en: 'Chocolate Cake', 
-        name_kh: 'នំឆុកូឡា', 
-        price: {
-            price_khr: 32750, 
-            price_dol: 7.99, 
-        },
-        discount_type: 'None',
-        afterDiscount: 7.99, 
-        menuType: 'dessert', 
-        category: 'sweets', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 4, 
-        code: '0004', 
-        image: 'https://source.unsplash.com/200x200/?juice', 
-        name_en: 'Orange Juice', 
-        name_kh: 'ទឹកក្រូច', 
-        price: {
-            price_khr: 24550, 
-            price_dol: 5.99, 
-        },
-        discount_type: 'None',
-        afterDiscount: 5.99, 
-        menuType: 'drink', 
-        category: 'juice', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 5, 
-        code: '0005', 
-        image: 'https://source.unsplash.com/200x200/?appetizer', 
-        name_en: 'Spring Rolls', 
-        name_kh: 'នំជ្រូក', 
-        price: {
-            price_khr: 53350, 
-            price_dol: 12.99, 
-        },
-        discount_type: 'Promotion 10%',
-        afterDiscount: 11.69, 
-        menuType: 'food', 
-        category: 'appetizer', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 6, 
-        code: '0006', 
-        image: 'https://source.unsplash.com/200x200/?cake', 
-        name_en: 'Strawberry Cheesecake', 
-        name_kh: 'នំខេកស្ត្របឺរី', 
-        price: {
-            price_khr: 34850, 
-            price_dol: 8.49, 
-        },
-        discount_type: 'Promotion 12%',
-        afterDiscount: 7.47, 
-        menuType: 'dessert', 
-        category: 'cake', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 7, 
-        code: '0007', 
-        image: 'https://source.unsplash.com/200x200/?tea', 
-        name_en: 'Green Tea', 
-        name_kh: 'តែបៃតង', 
-        price: {
-            price_khr: 28750, 
-            price_dol: 6.99, 
-        },
-        discount_type: 'None',
-        afterDiscount: 6.99, 
-        menuType: 'drink', 
-        category: 'tea', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 8, 
-        code: '0008', 
-        image: 'https://source.unsplash.com/200x200/?steak', 
-        name_en: 'Beef Steak', 
-        name_kh: 'សាច់គោអាំង', 
-        price: {
-            price_khr: 61650, 
-            price_dol: 14.99, 
-        },
-        discount_type: 'Promotion 8%',
-        afterDiscount: 13.79, 
-        menuType: 'food', 
-        category: 'main course', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 9, 
-        code: '0009', 
-        image: 'https://source.unsplash.com/200x200/?ice-cream', 
-        name_en: 'Vanilla Ice Cream', 
-        name_kh: 'ក្រែមស៊ីវ៉ានី', 
-        price: {
-            price_khr: 41050, 
-            price_dol: 9.99, 
-        },
-        discount_type: 'Promotion 10%',
-        afterDiscount: 8.99, 
-        menuType: 'dessert', 
-        category: 'ice cream', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 10, 
-        code: '0010', 
-        image: 'https://source.unsplash.com/200x200/?soda', 
-        name_en: 'Cola', 
-        name_kh: 'កូកាកូឡា', 
-        price: {
-            price_khr: 20550, 
-            price_dol: 4.99, 
-        },
-        discount_type: 'None',
-        afterDiscount: 4.99, 
-        menuType: 'drink', 
-        category: 'soda', 
-        createdAt: '2025-03-23' 
-    },
-    { 
-        id: 11, 
-        code: '0011', 
-        image: 'https://source.unsplash.com/200x200/?sandwich', 
-        name_en: 'Club Sandwich', 
-        name_kh: 'សាំងវិច', 
-        price: {
-            price_khr: 47350, 
-            price_dol: 11.49, 
-        },
-        discount_type: 'Promotion 7%',
-        afterDiscount: 10.68, 
-        menuType: 'food', 
-        category: 'sandwich', 
-        createdAt: '2025-03-23' 
-    }
-];
-
-
 const selectedColumns = ref([...columns]);
-const emptyValue: Ref<string> = ref<string>('');
+const timeout: Ref<NodeJS.Timeout | null> = ref<NodeJS.Timeout | null>(null);
+const dataAll: Ref<Items[]> = ref<Items[]>([]);
+const searchValue: Ref<string> = ref<string>('');
+const totalSale: Ref<number> = ref<number>(0);
+const totalQty: Ref<number> = ref<number>(0);
+const totalOrders: Ref<number> = ref<number>(0);
+const totalDiscount: Ref<number> = ref<number>(0);
+
+const { fetchApi} = useAPI();
+
+const fetchHistory = async (query = ''): Promise<void> => {
+    let url: string = "purchasing/today-report";
+    if (query) url += `?search=${query}`;
+    const result = await fetchApi('GET', url) as any;
+    if (!result.error) {
+        dataAll.value = Array.isArray(result.data) ? result.data : [];
+        totalSale.value = result.total_sales || 0;
+        totalQty.value = result.total_qty || 0;
+        totalOrders.value = result.count || 0;
+        totalDiscount.value = result.total_discount || 0;
+    }
+}
+const searchData = async (value: string): Promise<void> => {
+    if (/^\s+$/.test(value)) return;
+    if (timeout.value) clearTimeout(timeout.value);
+
+    timeout.value = setTimeout(async () => {
+        await fetchHistory(value);
+    }, 300);
+};
 
 
-const page = ref(1);
-const pageCount = ref(10);
+const handleCloseShift = async (): Promise<void> => {
+    const result = await fetchApi('POST', 'purchasing/close-shift') as ResponseStatus;
+    if(!result.error)
+    {
+        await fetchHistory();
+    }
+};
 
-const rows = computed(() => {
-  return dataAll.slice((page.value - 1) * pageCount.value, page.value * pageCount.value);
-});
+const comfileDialog = async(): Promise<void> => {
+    Confirm(
+        "Are you sure?",
+        "You are about to close today's report.",
+        "Report Closed",
+        "Cancelled",
+        "The report was closed successfully.",
+        "You cancelled the action.",
+        async () => {
+            await handleCloseShift();
+        }
+    );
+}
 
-const pageFrom = computed(() => {
-  return (page.value - 1) * pageCount.value + 1;
-});
-
-const pageTo = computed(() => {
-  const to = page.value * pageCount.value;
-  return to > dataAll.length ? dataAll.length : to;
-});
-
-const pageTotal = computed(() => {
-  return dataAll.length;
-});
-
-
+onMounted(async (): Promise<void> => {
+    await fetchHistory()
+})
 
 definePageMeta({
     middleware: 'auth',

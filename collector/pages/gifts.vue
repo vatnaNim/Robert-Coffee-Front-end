@@ -321,12 +321,12 @@ const { generateId, initializeFromExistingId } = useIdGenerator(1, 'G', 3);
 
 
 const initializeId = async (): Promise<void> => {
-    let url: string = 'menuList/last-id';
+    let url: string = 'gift/last-id';
     const result = (await fetchApi('GET', url)) as any;
 
     if (!result.error && result.data?.pro_code) 
     {
-        initializeFromExistingId(result.data.pro_code); 
+        initializeFromExistingId(result.data.gift_id); 
         _form.value.gift_id = generateId();
     } else {
         _form.value.gift_id = generateId();
@@ -380,7 +380,7 @@ watch(() => props.giftId, async(id: number | null): Promise<void> => {
 
 const clearForm = async (): Promise<void> => {
     _form.value = {
-        gift_id: '',
+        gift_id: generateId(),
         name: '',
         points: 0,
         sku: 0,

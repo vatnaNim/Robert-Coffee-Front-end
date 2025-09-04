@@ -209,7 +209,7 @@ const initializeId = async (): Promise<void> => {
 
 const fetchMenuListOption = async (): Promise<void> => {
     let url: string = `menuList/select-input`;
-    const result = await postApi('Get', url) as any;
+    const result = await fetchApi('Get', url) as any;
     if (!result.error && Array.isArray(result.options)) 
     {
         menuListOptions.value = result.options as Items[];

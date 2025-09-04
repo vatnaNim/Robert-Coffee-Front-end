@@ -66,34 +66,13 @@
                         </UInput>
                     </div>
                 </div>
-
                 <div 
                     class="bg-white/30 dark:bg-black/20 border border-gray-200 dark:border-white  rounded-lg shadow-xl overflow-x-auto">
                     <div 
                         class="flex px-3 py-3.5 border-b gap-x-2 items-center border-orange-400">
-                       <UFormGroup 
-                            label="Filter card type:"
-                            :ui="{
-                                label:{
-                                    base: 'text-orange-500 fornt-semibold'
-                                }
-                            }"/>
-                       <SelectMenu
-                            class="w-full max-w-[350px] sm:max-w-[500px]"
-                            name=""
-                            value-attribute="value"
-                            option-attribute="value"
-                            size="sm"
-                            color="amber"
-                            placeholder="Please filter card level"
-                            :options="[
-                                { label: 'Silver point', value: 'silver point' },
-                                { label: 'Gold point', value: 'gold point' },
-                                { label: 'Black point', value: 'black point' }
-                            ]"
-                        />
                     </div>
 					<LazyUTable
+                        class="custom-scrollbar"
                         v-model:expand="expand"
                         :rows="memberDb"
                         :columns="selectedColumns"
@@ -269,7 +248,7 @@ import {
 
 
 definePageMeta({
-    // middleware: 'auth',
+    middleware: 'auth',
     colorMode: 'light'
 });
 
